@@ -3,6 +3,7 @@ package management.sttock.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,7 +28,7 @@ public abstract class Product {
 
     private String description; //상품 구체 설명(사용자 입력)
 
-    private LocalDateTime purchaseDate;
+    private LocalDate purchaseDate;
 
     private int expectedPurchaseDate;
 
