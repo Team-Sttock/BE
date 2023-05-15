@@ -1,5 +1,6 @@
 package management.sttock.domain;
 
-public enum CategoryType {
 
+public enum CategoryType {
+    DALIYSUPPLIES, BATHPRODUCT, HAIRBODY, SKINCARE, WOMENGOODS, SHAVINGORAL, KITCHENPRODUCT, ETC
 }
