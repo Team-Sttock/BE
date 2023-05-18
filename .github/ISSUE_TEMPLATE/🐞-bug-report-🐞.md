@@ -7,9 +7,9 @@ assignees: BOYOUNG-KANG
 
 ---
 
-## 🐞Bug Description 
+## 🐞Bug Description 🐞
 
-##  🐞 To Do
+##  🐞 To Do 🐞
 
 - [ ] Todo1
 - [ ] Todo2
