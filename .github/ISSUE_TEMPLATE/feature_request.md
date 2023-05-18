@@ -2,19 +2,16 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
-assignees: ''
+labels: BE, feature
+assignees: BOYOUNG-KANG
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## :pick: Feature Description :pick:
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+##  :pick: To Do :pick:
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+- [ ] Todo1
+- [ ] Todo2
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## ETC
