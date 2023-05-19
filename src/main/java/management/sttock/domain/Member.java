@@ -1,5 +1,6 @@
 package management.sttock.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -24,4 +25,5 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Product> products = new ArrayList<>();
+
 }
