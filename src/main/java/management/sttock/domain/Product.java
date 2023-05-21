@@ -1,12 +1,14 @@
 package management.sttock.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) //상속-조인 전략 사용
 @DiscriminatorColumn //dtype자동생성

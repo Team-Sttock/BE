@@ -2,6 +2,7 @@ package management.sttock.repository;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -33,9 +34,18 @@ public class MemberRepository {
                 .setParameter("email",email)
                 .getResultList();
     }
-    public List<Member> findById(Long id) {
-        return em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
+    public List<Member> findByUserId(String userId) {
+        return em.createQuery("select m from Member m where m.userId = :userId", Member.class)
+                .setParameter("userId", userId)
                 .getResultList();
+    }
+    public Member findOneByUserId(String userId) {
+        return em.find(Member.class, userId);
+    }
+
+    public int delete(String userId) {
+        return em.createQuery("delete from Member m where m.userId = :userId", Member.class)
+                .setParameter("userId", userId)
+                .executeUpdate();
     }
 }
