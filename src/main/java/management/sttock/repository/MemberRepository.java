@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
-    private EntityManager em;
+    private final EntityManager em;
 
     //회원 저장
     public Long save(Member member) {
@@ -33,9 +33,21 @@ public class MemberRepository {
                 .setParameter("email",email)
                 .getResultList();
     }
-    public List<Member> findById(Long id) {
-        return em.createQuery("select m from Member m where m.id = :id", Member.class)
-                .setParameter("id", id)
+    public List<Member> findByUserId(String userId) {
+        return em.createQuery("select m from Member m where m.userId = :userId", Member.class)
+                .setParameter("userId", userId)
                 .getResultList();
+    }
+    public Member findOneByUserId(String userId) {
+        return em.find(Member.class, userId);
+    }
+    public Member findOneByEmail(String email) {
+        return em.find(Member.class, email);
+    }
+
+    public int delete(String userId) {
+        return em.createQuery("delete from Member m where m.userId = :userId", Member.class)
+                .setParameter("userId", userId)
+                .executeUpdate();
     }
 }
