@@ -5,6 +5,7 @@ import management.sttock.config.jwt.TokenProvider;
 import management.sttock.domain.Member;
 import management.sttock.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(Member member) {
         validationDupliateMember(member);//중복 회원 검증
+
         memberRepository.save(member);
+        member.encodePassword(passwordEncoder);
+
         return member.getId();
     }
 
@@ -45,14 +48,19 @@ public class MemberService {
         return memberRepository.findAll();
     }
     //회원 pk로 조회
-    public Member findMember(Long userId) {
-        return memberRepository.findOne(userId);
+    public Member findMember(Long id) {
+        return memberRepository.findOne(id);
     }
 
     //회원아이디로 조회
     public Member findUserid(String userId) {
         return memberRepository.findOneByUserId(userId);
     }
+    //이메일로 회원아이디 찾기
+    public Member findEmail(String email) {
+        return memberRepository.findOneByEmail(email);
+    }
+
     //회원 삭제
     @Transactional
     public String deleteMember(String userId) {
@@ -66,9 +74,8 @@ public class MemberService {
         } else {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
-
     }
 
+    //로그아웃
 
-    //로그아웃, 아이디 찾기, 비번 찾기
 }

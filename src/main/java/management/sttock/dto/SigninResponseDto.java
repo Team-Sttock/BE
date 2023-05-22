@@ -14,22 +14,16 @@ public class SigninResponseDto {
     private String userId;
     private String email;
     private String name;
-    private int phoneNumber;
+    private String phoneNumber;
     @NotBlank
-    private String accessToken;
-    @NotBlank
-    private String tokenType;
-    @NotBlank
-    private int expiresIn;
+    private String token;
 
     //entity-> dto
-    public SigninResponseDto(Member member, String accessToken, String tokenType, int expiresIn) {
+    public SigninResponseDto(Member member, String token) {
         this.userId = member.getUserId();
         this.email = member.getEmail();
         this.name = member.getName();
         this.phoneNumber = member.getPhoneNumber();
-        this.accessToken = accessToken;
-        this.tokenType = tokenType;
-        this.expiresIn = expiresIn;
+        this.token = token;
     }
 }

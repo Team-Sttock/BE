@@ -1,12 +1,12 @@
 package management.sttock.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import lombok.RequiredArgsConstructor;
 import management.sttock.config.jwt.JwtFilter;
 import management.sttock.config.jwt.TokenProvider;
 import management.sttock.domain.Member;
 import management.sttock.dto.SigninRequestDto;
+import management.sttock.dto.SigninResponseDto;
 import management.sttock.dto.SignupRequestDto;
 import management.sttock.dto.SignupResponseDto;
 import management.sttock.sevice.MemberService;
@@ -25,50 +25,69 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/")
 public class MemberController {
-
     private final MemberService memberService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
 
     @ApiOperation(value = "회원가입", notes = "아이디 중복 확인")
     @PostMapping("/signup")
-    public ResponseEntity<Long> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-            return ResponseEntity.status(HttpStatus.OK).body(memberService.join(signupRequestDto.toEntity()));
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
+        try {
+            Long id = memberService.join(signupRequestDto.toEntity());
+
+            SignupResponseDto signupResponseDto = new SignupResponseDto();
+            signupResponseDto.setId(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body(signupResponseDto);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
     @ApiOperation("로그인")
     @PostMapping("/signin")
-    public ResponseEntity<SignupResponseDto> signin(@Valid @RequestBody SigninRequestDto signinRequestDto) {
+    public ResponseEntity<SigninResponseDto> signin(@Valid @RequestBody SigninRequestDto signinRequestDto) {
         //사용자 인증
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(signinRequestDto.getUserId(), signinRequestDto.getPassword());
-
         Authentication authentication =
                 authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        //jwt 토큰 생성
-        String jwt = tokenProvider.createToken(authentication);
+        try {
+            //jwt 토큰 생성
+            String token = tokenProvider.createToken(authentication);
 
-        //httpheader에 jwt 토큰 포함
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer" + jwt);
+            Member member = memberService.findUserid(signinRequestDto.getUserId());
+            //응답 dto 생성
+            SigninResponseDto signinResponseDto = new SigninResponseDto();
+            signinResponseDto.setUserId(member.getUserId());
+            signinResponseDto.setEmail(member.getEmail());
+            signinResponseDto.setName(member.getName());
+            signinResponseDto.setPhoneNumber(member.getPhoneNumber());
+            signinResponseDto.setToken(token);
+            return ResponseEntity.status(HttpStatus.OK).body(signinResponseDto);
 
-        //응답 dto 생성
-        Member member = memberService.findUserid(signinRequestDto.getUserId());
-        return new ResponseEntity<>(new SignupResponseDto(member, jwt), httpHeaders, HttpStatus.OK);
-
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
-    @ApiOperation("로그아웃")
-    @PostMapping("/users/logout")
-    public void logout() {
-
+    @ApiOperation("아이디 찾기")
+    @PostMapping("/findId")
+    public String findUseridByEmail(String email) {
+        Member findMember = memberService.findEmail(email);
+        return findMember.getUserId();
     }
 
-
-//    @ApiOperation("아이디 찾기")
-//
+    //임시비밀번호 로직으로 변경
 //    @ApiOperation("비밀번호 찾기")
+//    @PostMapping("/findPassword")
+//    public String findUserPassword (String userId, String email) {
+//        Member findMember = memberService.findEmail(email);
+//        return findMember.getUserPassword();
+//    }
 
     @ApiOperation("회원탈퇴")
     @DeleteMapping("/users/{userId}")
@@ -76,11 +95,17 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(memberService.deleteMember(userId));
 
     }
-//    @ApiOperation("회원정보 수정")
+    @ApiOperation("회원정보 수정")
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<Member> changeMemberInfo (@PathVariable String userId) {
+        Member findMember = memberService.findUserid(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(findMember);
+
+    }
 
     @ApiOperation("유저 프로필 조회")
     @GetMapping("/users/{userId}/profile")
-    public ResponseEntity<Member> getUserInfo(@PathVariable String userId) {
+    public ResponseEntity<Member> getMemberInfo(@PathVariable String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.findUserid(userId));
     }
 

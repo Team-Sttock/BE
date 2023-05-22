@@ -2,7 +2,6 @@ package management.sttock.repository;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.domain.Member;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -11,7 +10,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
-    private EntityManager em;
+    private final EntityManager em;
 
     //회원 저장
     public Long save(Member member) {
@@ -41,6 +40,9 @@ public class MemberRepository {
     }
     public Member findOneByUserId(String userId) {
         return em.find(Member.class, userId);
+    }
+    public Member findOneByEmail(String email) {
+        return em.find(Member.class, email);
     }
 
     public int delete(String userId) {

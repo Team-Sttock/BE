@@ -3,10 +3,7 @@ package management.sttock.dto;
 import lombok.*;
 import management.sttock.domain.Member;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 
 @Getter
@@ -20,17 +17,15 @@ public class SignupRequestDto {
     @NotBlank(message = "비밀번호를 입력해주세요")
     @Size(min = 3, max = 100)
     private String password;
-    @NotBlank(message = "이름을 입력해주세요")
-    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-zA-Z0-9_-]{3,20}$")
     private String name;
-    @NotBlank(message = "이메일을 입력해주세요")
-    @Email
+    @NotNull(message = "이메일을 입력해주세요")
     private String email;
-    @NotBlank(message = "전화번호를 입력해주세요")
-    private int phoneNumber;
+
+    @NotNull
+    private String phoneNumber;
 
     @Builder
-    public SignupRequestDto(String userId, String password, String name, String email, int phoneNumber) {
+    public SignupRequestDto(String userId, String password, String name, String email, String phoneNumber) {
         this.userId = userId;
         this.password = password;
         this.name = name;
