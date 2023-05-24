@@ -1,10 +1,8 @@
 package management.sttock.sevice;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.config.jwt.TokenProvider;
 import management.sttock.domain.Member;
 import management.sttock.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +21,15 @@ public class MemberService {
     public Long join(Member member) {
         validationDupliateMember(member);//중복 회원 검증
 
-        memberRepository.save(member);
         member.encodePassword(passwordEncoder);
+        memberRepository.save(member);
 
         return member.getId();
     }
 
     //아이디, 이메일 중복 검사
     private void validationDupliateMember(Member member) {
-        List<Member> findSameId = memberRepository.findByUserId(member.getUserId());
+        List<Member> findSameId = memberRepository.findByUserIdForList(member.getUserId());
         List<Member> findSameEmail = memberRepository.findByEmail(member.getEmail());
         if (!findSameId.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 아이디입니다.");
@@ -56,9 +54,14 @@ public class MemberService {
     public Member findUserid(String userId) {
         return memberRepository.findOneByUserId(userId);
     }
+
+    public Member findUseridforLogin(String userId) {
+        return memberRepository.findOneByUserIdForLong(userId);
+    }
+
     //이메일로 회원아이디 찾기
-    public Member findEmail(String email) {
-        return memberRepository.findOneByEmail(email);
+    public String findEmail(String email) {
+        return memberRepository.findOneByEmail(email).getUserId();
     }
 
     //회원 삭제
@@ -75,7 +78,5 @@ public class MemberService {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
     }
-
-    //로그아웃
 
 }
