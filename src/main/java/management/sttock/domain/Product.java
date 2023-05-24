@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) //상속-조인 전략 사용
-@DiscriminatorColumn //dtype자동생성
+@DiscriminatorColumn //dtype 자동생성
 public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,5 +41,6 @@ public abstract class Product {
         member.getProducts().add(this);
     }
     //현재 상품에 따른 카테고리 변경 불가능, 필요시 생성
+
 
 }
