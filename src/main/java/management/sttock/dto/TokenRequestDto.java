@@ -1,7 +1,6 @@
 package management.sttock.dto;
 
 import lombok.*;
-import management.sttock.domain.Member;
 
 import javax.validation.constraints.NotBlank;
 
@@ -9,15 +8,15 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class SigninResponseDto {
-    private String name;
+public class TokenRequestDto {
+    @NotBlank
+    private String userId;
     @NotBlank
     private String token;
 
     //entity-> dto
-    public SigninResponseDto(Member member, String token) {
-        this.name = member.getName();
+    public TokenRequestDto(String userId, String token) {
+        this.userId = userId;
         this.token = token;
     }
 }
