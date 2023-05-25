@@ -1,5 +1,6 @@
 package management.sttock.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,6 +35,18 @@ public abstract class Product {
     private int expectedPurchaseDate;
 
     private int purchaseStatus; //구매완료=0, 예측실패=1, 구매쉬기=2, 구매예정없음=4
+
+    @Builder
+    public Product(Category category, Member member, String name, String description,
+                   LocalDate purchaseDate, int expectedPurchaseDate, int purchaseStatus) {
+        this.category = category;
+        this.member = member;
+        this.name = name;
+        this.description = description;
+        this.purchaseDate = purchaseDate;
+        this.expectedPurchaseDate = expectedPurchaseDate;
+        this.purchaseStatus = purchaseStatus;
+    }
 
     //==연관관계 편의 메소드==//
     public void setMember(Member member) {

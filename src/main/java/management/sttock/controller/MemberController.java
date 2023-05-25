@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import management.sttock.config.jwt.TokenProvider;
 import management.sttock.domain.Member;
-import management.sttock.dto.*;
+import management.sttock.memberDto.*;
 import management.sttock.sevice.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,6 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
-//    private final CustomUserDetailsService userDetailsService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @ApiOperation(value = "회원가입", notes = "아이디 중복 확인")
@@ -56,13 +55,10 @@ public class MemberController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         try {
             String token = tokenProvider.createToken(authentication);
-            System.out.println("11111111");
             Member member = memberService.findUseridforLogin(signinRequestDto.getUserId());
-            System.out.println("2222222");
             SigninResponseDto signinResponseDto = new SigninResponseDto();
             signinResponseDto.setName(member.getName());
             signinResponseDto.setToken(token);
-            System.out.println("33333333");
             return ResponseEntity.status(HttpStatus.OK).body(signinResponseDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
