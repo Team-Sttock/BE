@@ -1,4 +1,4 @@
-package management.sttock.dto;
+package management.sttock.memberDto;
 
 import lombok.*;
 import management.sttock.domain.Member;
