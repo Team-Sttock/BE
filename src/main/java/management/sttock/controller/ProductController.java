@@ -24,10 +24,10 @@ public class ProductController {
 
 //    @ApiOperation("상품 생성")
 //    @PostMapping("")
-//    public ResponseEntity createProduct(@Valid @RequestHeader("Authorization") String token,
-//                                        @RequestBody CreateProductRequestDto createProductRequestDto) {
+//    public ResponseEntity createProduct(@Valid @RequestHeader("Authorization") String token, @RequestBody CreateProductRequestDto createProductRequestDto) {
 //        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-//        Member findMember = memberService.findUserid(sub);
+//        Member findMember = memberService.findUseridforLogin(sub);
+//
 //        if (findMember != null) {
 //            productService.create(createProductRequestDto);
 //            return ResponseEntity.status(HttpStatus.OK).build();
