@@ -48,20 +48,20 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-//
-//    @ApiOperation("상품 삭제")
-//    @DeleteMapping("/{productId}")
-//    public ResponseEntity deleteProduct(@RequestHeader("Authorization") String token,
-//                                        @PathVariable Long productId) {
-//        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-//        try {
-//            Product findProduct = productService.find(sub, productId);
-//            productService.delete(productId);
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
+
+    @ApiOperation("상품 삭제")
+    @DeleteMapping("/{productId}")
+    public ResponseEntity deleteProduct(@RequestHeader("Authorization") String token,
+                                        @PathVariable Long productId) {
+        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+        try {
+            Product findProduct = productService.find(sub, productId);
+            productService.delete(productId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 //
 //    @ApiOperation("전체 상품 조회")
 //    @GetMapping("")
@@ -74,7 +74,6 @@ public class ProductController {
 //        }
 //
 //    }
-//
 //
 //    @ApiOperation("특정 상품 조회")
 //    @GetMapping("/{productId}")

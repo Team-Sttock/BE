@@ -41,7 +41,7 @@ public class ProductRepository {
 
     public Product findOne(String userId, Long id) {
         String jpql = "SELECT p FROM Product p " +
-                "JOIN p.member m " +
+                "JOIN fetch p.member m " +
                 "WHERE m.userId = :userId " +
                 "AND p.id = :productId";
 
