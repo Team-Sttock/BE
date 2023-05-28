@@ -20,7 +20,6 @@ public class UpdateProductRequestDto {
     private String discription;
     private LocalDate purchaseDate;
     private int purchaseAmount; //사용자 구매량
-
     private Float regularCapacity;//용량 - 1일 사용량
 
     @Builder

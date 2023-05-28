@@ -1,10 +1,11 @@
 package management.sttock.controller;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import management.sttock.config.jwt.TokenProvider;
 import management.sttock.domain.Product;
-import management.sttock.productDto.AProductResponseDto;
 import management.sttock.productDto.UpdateProductRequestDto;
 import management.sttock.productDto.CreateProductRequestDto;
 import management.sttock.productDto.TotalProductResponseDto;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,19 +38,18 @@ public class ProductController {
         }
     }
 
-    @ApiOperation("상품 수정")
-    @PutMapping("/{productId}")
-    public ResponseEntity updateProduct(@RequestHeader("Authorization") String token, @PathVariable Long productId,
-                                        @RequestBody UpdateProductRequestDto updateProductRequestDto) {
-        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-        try {
-            productService.update(sub, updateProductRequestDto.toEntity());
-
-            return ResponseEntity.status(HttpStatus.OK).body(UpdateProductRequestDto.builder().build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
+//    @ApiOperation("상품 수정")
+//    @PutMapping("/{productId}")
+//    public ResponseEntity updateProduct(@RequestHeader("Authorization") String token, @PathVariable Long productId,
+//                                        @RequestBody UpdateProductRequestDto updateProductRequestDto) {
+//        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+//        try {
+//            productService.update(sub, updateProductRequestDto.toEntity());
+//            return ResponseEntity.status(HttpStatus.OK).body(UpdateProductRequestDto.builder().build());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
 
     @ApiOperation("상품 삭제")
     @DeleteMapping("/{productId}")
@@ -62,48 +64,29 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-//
-//    @ApiOperation("전체 상품 조회")
-//    @GetMapping("")
-//    public ResponseEntity<TotalProductResponseDto> totalProduct(@RequestHeader("Authorization") String token) {
-//        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-//        try {
-//            productService.findProducts(sub);
-//            TotalProductResponseDto totalProductResponseDto = new TotalProductResponseDto();
-//            totalProductResponseDto
-//        }
-//
-//    }
-//
-//    @ApiOperation("특정 상품 조회")
-//    @GetMapping("/{productId}")
-//    public ResponseEntity<AProductResponseDto> aProduct(@RequestHeader("Authorization") String token,
-//                                                        @PathVariable Long productId) {
-//        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-//        try {
-//            Product findProduct = productService.find(sub, productId);
-//
-//            AProductResponseDto aProductResponseDto = new AProductResponseDto();
-//            aProductResponseDto.setCategory(findProduct.getCategory());
-//            aProductResponseDto.setName(findProduct.getName());
-//            aProductResponseDto.setDiscription(findProduct.getDescription());
-//            aProductResponseDto.setPurchaseDate(findProduct.getPurchaseDate());
-//            aProductResponseDto.setPurchaseAmount(findProduct.getPurchaseAmount());
-//            aProductResponseDto.setExpectedPurchaseDate(findProduct.getExpectedPurchaseDate());
-//            aProductResponseDto.setPurchaseStatus(findProduct.getPurchaseStatus());
-//            aProductResponseDto.setRegularDate(findProduct.getRegularDate());
-//            aProductResponseDto.setRegularCapacity(findProduct.getRegularCapacity());
-//
-//            return ResponseEntity.status(HttpStatus.OK).body(aProductResponseDto);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-//
-//    @ApiOperation("자주 이용하는 상품 조회")
-//    @GetMapping("/{frequently-used-products}")
-//
- //   @ApiOperation("카테고리별 조회")
-//    @GetMapping("/{categoryId}")
 
+    @ApiOperation("상품 조회")
+    @GetMapping("")
+    public ResponseEntity<Result<List<TotalProductResponseDto>>> totalProduct(@RequestHeader("Authorization") String token,
+                                                   @RequestParam("category") String category, @RequestParam("sort")String sort) {
+        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+        try {
+            List<Product> findProducts = productService.findProducts(sub, category, sort);
+            List<TotalProductResponseDto> totalProductResponseDto = findProducts.stream()
+                    .map(TotalProductResponseDto::new)
+                    .collect(Collectors.toList());
+
+            Result<List<TotalProductResponseDto>> result = new Result<>(totalProductResponseDto.size(), totalProductResponseDto);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private int count;
+        private T data;
+    }
 }

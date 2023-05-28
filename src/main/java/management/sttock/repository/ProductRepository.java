@@ -25,19 +25,60 @@ public class ProductRepository {
         }
     }
 
-    public List<Product> findAllProducts(String userId) {
+    //1전체&최신등록순 2전체&소진임박순 3카테고리&최신등록순 4 카테고리&소진임박순
+    //카테고리
+    public List<Product> findProductsByCategoryByRecent(String userId, String category) {
         String jpql = "SELECT p FROM Product p " +
-                "JOIN p.member m " +
-                "WHERE m.userId = :userId";
+                "JOIN FETCH p.member m " +
+                "WHERE m.userId = :userId " +
+                "AND p.category = :category " +
+                "ORDER BY p.purchaseDate ASC";
 
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("userId", userId);
-        try {
-            return query.getResultList();
-        } catch (NoResultException e) {
-            return null;
-        }
+        query.setParameter("category", category);
+
+        return query.getResultList();
     }
+    public List<Product> findProductsByCategoryByShort(String userId, String category) {
+        String jpql = "SELECT p FROM Product p " +
+                "JOIN FETCH p.member m " +
+                "WHERE m.userId = :userId " +
+                "AND p.category = :category " +
+                "ORDER BY p.expectedDate ASC";
+
+        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        query.setParameter("userId", userId);
+        query.setParameter("category", category);
+
+        return query.getResultList();
+    }
+
+    //전체
+    public List<Product> findAllProductsByRecent(String userId) {
+        String jpql = "SELECT p FROM Product p " +
+                "JOIN FETCH p.member m " +
+                "WHERE m.userId = :userId " +
+                "ORDER BY p.purchaseDate ASC";
+
+        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList();
+    }
+
+    public List<Product> findAllProductsByShort(String userId) {
+        String jpql = "SELECT p FROM Product p " +
+                "JOIN FETCH p.member m " +
+                "WHERE m.userId = :userId " +
+                "ORDER BY p.expectedDate ASC";
+
+        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList();
+    }
+
 
     public Product findOne(String userId, Long id) {
         String jpql = "SELECT p FROM Product p " +

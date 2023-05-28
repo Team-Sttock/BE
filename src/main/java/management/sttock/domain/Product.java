@@ -24,6 +24,8 @@ public class Product {
     private LocalDate purchaseDate;
     private int purchaseAmount; //사용자 구매량
 
+    private LocalDate expectedDate;
+
     //구매완료=0, 예측실패=1, 구매쉬기=2, 구매예정없음=3
     private int purchaseStatus;
 
@@ -33,13 +35,15 @@ public class Product {
 
     @Builder
     public Product(Member member, String category, String name, String description,
-                   LocalDate purchaseDate, int purchaseAmount, int purchaseStatus, Float regularCapacity) {
+                   LocalDate purchaseDate, int purchaseAmount, LocalDate expectedDate,
+                   int purchaseStatus, Float regularCapacity) {
         this.member = member;
         this.category = category;
         this.name = name;
         this.description = description;
         this.purchaseDate = purchaseDate;
         this.purchaseAmount = purchaseAmount;
+        this.expectedDate = expectedDate;
         this.purchaseStatus = purchaseStatus;
         this.regularCapacity = regularCapacity;
     }
