@@ -38,24 +38,32 @@ public class ProductController {
         }
     }
 
-//    @ApiOperation("상품 수정")
-//    @PutMapping("/{productId}")
-//    public ResponseEntity updateProduct(@RequestHeader("Authorization") String token, @PathVariable Long productId,
-//                                        @RequestBody UpdateProductRequestDto updateProductRequestDto) {
-//        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
-//        try {
-//            productService.update(sub, updateProductRequestDto.toEntity());
-//            return ResponseEntity.status(HttpStatus.OK).body(UpdateProductRequestDto.builder().build());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
+    @ApiOperation("상품 수정")
+    @PutMapping("/{productId}")
+    public ResponseEntity updateProduct(@RequestHeader("Authorization") String token, @PathVariable Long productId,
+                                        @RequestBody UpdateProductRequestDto updateProductRequestDto) {
+        String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+        Product findProduct = productService.find(sub, productId);
+        if (findProduct == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        try {
+            productService.update(sub, updateProductRequestDto.toEntity(), productId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     @ApiOperation("상품 삭제")
     @DeleteMapping("/{productId}")
     public ResponseEntity deleteProduct(@RequestHeader("Authorization") String token,
                                         @PathVariable Long productId) {
         String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+        Product findProductByProductId = productService.find(sub, productId);
+        if(findProductByProductId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         try {
             Product findProduct = productService.find(sub, productId);
             productService.delete(productId);
@@ -68,8 +76,12 @@ public class ProductController {
     @ApiOperation("상품 조회")
     @GetMapping("")
     public ResponseEntity<Result<List<TotalProductResponseDto>>> totalProduct(@RequestHeader("Authorization") String token,
-                                                   @RequestParam("category") String category, @RequestParam("sort")String sort) {
+                                                @RequestParam(value = "category", required = false) String category,
+                                                @RequestParam(value = "sort", required = false) String sort) {
         String sub = tokenProvider.getUserIdFromToken(token.substring(7));
+        if (sub == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         try {
             List<Product> findProducts = productService.findProducts(sub, category, sort);
             List<TotalProductResponseDto> totalProductResponseDto = findProducts.stream()

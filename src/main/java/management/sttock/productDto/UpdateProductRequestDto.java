@@ -20,17 +20,8 @@ public class UpdateProductRequestDto {
     private String discription;
     private LocalDate purchaseDate;
     private int purchaseAmount; //사용자 구매량
+    private LocalDate expectedDate;
     private Float regularCapacity;//용량 - 1일 사용량
-
-    @Builder
-    public UpdateProductRequestDto(String category, String name, String discription,
-                                   LocalDate purchaseDate, Float regularCapacity) {
-        this.category = category;
-        this.name = name;
-        this.discription = discription;
-        this.purchaseDate = purchaseDate;
-        this.regularCapacity = regularCapacity;
-    }
 
     //dto->entity
     public Product toEntity() {
@@ -39,6 +30,8 @@ public class UpdateProductRequestDto {
                 .name(this.name)
                 .description(this.discription)
                 .purchaseDate(this.purchaseDate)
+                .purchaseAmount(this.purchaseAmount)
+                .expectedDate(this.expectedDate)
                 .regularCapacity(this.regularCapacity)
                 .build();
     }

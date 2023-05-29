@@ -19,6 +19,7 @@ public class CreateProductRequestDto {
 
     private LocalDate purchaseDate;
     private int purchaseAmount; //사용자 구매량
+    private LocalDate expectedDate;
     private Float regularCapacity;//용량 - 1일 사용량
 
     //dto->entity
@@ -29,6 +30,7 @@ public class CreateProductRequestDto {
                 .description(this.discription)
                 .purchaseDate(this.purchaseDate)
                 .purchaseAmount(this.purchaseAmount)
+                .expectedDate(this.expectedDate)
                 .regularCapacity(this.regularCapacity)
                 .build();
     }

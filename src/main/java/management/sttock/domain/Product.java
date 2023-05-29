@@ -23,12 +23,9 @@ public class Product {
     private String description; //상품 구체 설명
     private LocalDate purchaseDate;
     private int purchaseAmount; //사용자 구매량
-
     private LocalDate expectedDate;
-
     //구매완료=0, 예측실패=1, 구매쉬기=2, 구매예정없음=3
     private int purchaseStatus;
-
     //사용량 측정 방식
     @Column(nullable = true)
     private Float regularCapacity; //용량 - 1일 사용량

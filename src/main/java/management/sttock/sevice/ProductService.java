@@ -36,7 +36,7 @@ public class ProductService {
         if(findMember != null) {
             return productRepository.findOne(userId, productId);
         } else {
-            throw new IllegalStateException("회원을 찾을 수 없습니다.");
+            throw new IllegalStateException("상품을 찾을 수 없습니다.");
         }
     }
     public List<Product> findProducts(String userId, String category, String sortMethod) {
@@ -64,8 +64,8 @@ public class ProductService {
         }
     }
     @Transactional
-    public void update(String userId, Product product) {
-        Product findProduct = productRepository.findOne(userId, product.getId());
+    public void update(String userId, Product product, Long productId) {
+        Product findProduct = productRepository.findOne(userId, productId);
         if (findProduct != null) {
 
             findProduct.setCategory(product.getCategory());
@@ -73,6 +73,7 @@ public class ProductService {
             findProduct.setDescription(product.getDescription());
             findProduct.setPurchaseDate(product.getPurchaseDate());
             findProduct.setPurchaseAmount(product.getPurchaseAmount());
+            findProduct.setExpectedDate(product.getExpectedDate());
             findProduct.setRegularCapacity(product.getRegularCapacity());
 
         } else {

@@ -32,7 +32,7 @@ public class ProductRepository {
                 "JOIN FETCH p.member m " +
                 "WHERE m.userId = :userId " +
                 "AND p.category = :category " +
-                "ORDER BY p.purchaseDate ASC";
+                "ORDER BY p.purchaseDate DESC";
 
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("userId", userId);
@@ -59,7 +59,7 @@ public class ProductRepository {
         String jpql = "SELECT p FROM Product p " +
                 "JOIN FETCH p.member m " +
                 "WHERE m.userId = :userId " +
-                "ORDER BY p.purchaseDate ASC";
+                "ORDER BY p.purchaseDate DESC";
 
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("userId", userId);
