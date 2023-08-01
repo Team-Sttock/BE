@@ -1,7 +1,6 @@
 package management.sttock.repository;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.domain.Member;
 import management.sttock.domain.Product;
 import org.springframework.stereotype.Repository;
 
