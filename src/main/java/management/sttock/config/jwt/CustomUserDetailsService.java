@@ -1,4 +1,4 @@
-package management.sttock.sevice;
+package management.sttock.config.jwt;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.domain.Member;

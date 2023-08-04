@@ -32,7 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -64,6 +63,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .apply(new JwtSecurityConfig(tokenProvider));
-
     }
 }

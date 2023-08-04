@@ -1,9 +1,6 @@
 spring:
-  config:
-    activate:
-      on-profile: local
-      datasource:
-        url:
-        username:
-        password:
-        driver-class-name:
+  datasource:
+    url: jdbc:mysql://localhost:3306/sttock_local_db?serverTimezone=Asia/Seoul
+    username: sttock_local_root
+    password: sttock1!
+    driver-class-name: com.mysql.cj.jdbc.Driver
