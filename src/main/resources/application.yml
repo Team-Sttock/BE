@@ -28,3 +28,4 @@ jwt:
   header: Authorization
   secret: ${SECRET_KEY}
   token-validity-in-seconds: ${TOKEN_VALIDATE_SECONDS}
+  refresh-token-validity-in-seconds: ${REFRESH_VALIDATE_SECONDS}

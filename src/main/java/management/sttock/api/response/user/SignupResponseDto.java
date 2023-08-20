@@ -1,7 +1,7 @@
 package management.sttock.api.response.user;
 
 import lombok.*;
-import management.sttock.db.entity.Member;
+import management.sttock.db.entity.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -15,7 +15,7 @@ public class SignupResponseDto {
     private Long id;
 
     //entity -> dto
-    public SignupResponseDto(Member member) {
-        this.id = member.getId();
+    public SignupResponseDto(User user) {
+        this.id = user.getId();
     }
 }

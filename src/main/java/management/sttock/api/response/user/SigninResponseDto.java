@@ -1,12 +1,12 @@
 package management.sttock.api.response.user;
 
 import lombok.*;
-import management.sttock.db.entity.Member;
+import management.sttock.db.entity.User;
+import management.sttock.db.entity.RefreshToken;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,9 +15,13 @@ public class SigninResponseDto {
     @NotBlank
     private String token;
 
+    @NotBlank
+    private RefreshToken refreshToken;
+
     //entity-> dto
-    public SigninResponseDto(Member member, String token) {
-        this.name = member.getName();
+    public SigninResponseDto(User user, String token, RefreshToken refreshToken) {
+        this.name = user.getName();
         this.token = token;
+        this.refreshToken = refreshToken;
     }
 }

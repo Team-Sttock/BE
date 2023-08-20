@@ -1,8 +1,8 @@
 package management.sttock.common.auth.local;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.db.entity.Member;
-import management.sttock.db.repository.MemberRepository;
+import management.sttock.db.entity.User;
+import management.sttock.db.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,20 +16,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Member findMember = memberRepository.findOneByUserIdForLong(username);
-        if(findMember == null) {
+        User findUser = userRepository.findOneByUserIdForLong(username);
+        if(findUser == null) {
             throw new UsernameNotFoundException("일치하는 회원이 없습니다.");
         }
 
         List<GrantedAuthority> authorities = Collections.emptyList();
 
-        return new org.springframework.security.core.userdetails.User(findMember.getUserId(), findMember.getUserPassword(),authorities);
+        return new org.springframework.security.core.userdetails.User(findUser.getNickname(), findUser.getUserPassword(),authorities);
     }
 
 }

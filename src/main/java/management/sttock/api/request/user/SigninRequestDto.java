@@ -12,9 +12,9 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class SigninRequestDto {
 
-    @NotBlank(message = "아이디를 입력헤 주세요")
+    @NotBlank(message = "닉네임을 입력해 주세요")
     @Size(min = 3, max = 50)
-    private String userId;
+    private String nickName;
     @NotBlank(message = "비밀번호를 입력해주세요")
     @Size(min = 3, max = 100)
     private String password;

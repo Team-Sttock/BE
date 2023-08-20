@@ -1,13 +1,12 @@
 package management.sttock.api.request.user;
 
 import lombok.*;
-import management.sttock.db.entity.Member;
+import management.sttock.db.entity.User;
 
 import javax.validation.constraints.*;
 
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignupRequestDto {
 
@@ -33,15 +32,15 @@ public class SignupRequestDto {
         this.phoneNumber = phoneNumber;
     }
 
-    //dto-> entity
-    public Member toEntity() {
-        return Member.builder()
-                .userId(this.userId)
-                .userPassword(this.password)
-                .name(this.name)
-                .email(this.email)
-                .phoneNumber(this.phoneNumber)
-                .build();
-    }
+//    //dto-> entity
+//    public User toEntity() {
+//        return User.builder()
+//                .userId(this.userId)
+//                .userPassword(this.password)
+//                .name(this.name)
+//                .email(this.email)
+//                .phoneNumber(this.phoneNumber)
+//                .build();
+//    }
 
 }
