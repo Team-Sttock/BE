@@ -8,11 +8,8 @@ server:
       force: true
 
 spring:
-  datasource:
-    url:  jdbc:mysql://localhost:3306/sttockDb?serverTimezone=Asia/Seoul
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name:  com.mysql.cj.jdbc.Driver
+  profiles:
+    active: local
 
   jpa:
     hibernate:
@@ -29,5 +26,5 @@ logging:
 
 jwt:
   header: Authorization
-  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-  token-validity-in-seconds: 86400
+  secret: ${SECRET_KEY}
+  token-validity-in-seconds: ${TOKEN_VALIDATE_SECONDS}
