@@ -11,5 +11,5 @@ public class Role {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private Long id;
-    private int code;
+    private int code; //일반 사용자 1, 관리자 2
 }

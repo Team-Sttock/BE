@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,7 +19,6 @@ public class User {
 
     private String nickname; //사용자 입력 id
 
-    @Column(name = "password")
     private String password;
 
     private String name;
@@ -43,9 +43,4 @@ public class User {
         this.familyNum = familyNum;
         this.birthday = birthday;
     }
-
-    public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(password);
-    }
-
 }
