@@ -1,0 +1,54 @@
+name: Deploy to AWS EC2
+
+# develop -> main 으로 변경 예정
+on:
+  push:
+    branches:
+      ["develop", "ci/**", "main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      - name: Install SSH
+        run: sudo apt-get install openssh-client
+
+      - name: Remove old JAR file from EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.DEV_PEM_KEY }}
+          script: |
+            sudo rm /home/ubuntu/sttock-0.0.1-SNAPSHOT.jar
+
+      - name: Copy files to EC2 instance
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.DEV_PEM_KEY }}
+          source: 'build/libs/sttock-0.0.1-SNAPSHOT.jar'
+          target: '/home/ubuntu/sttock-0.0.1-SNAPSHOT.jar'
+
+      - name: SSH into EC2 instance and start the application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.DEV_PEM_KEY }}
+          script: |
+            cd /home/ubuntu/
+            java -jar sttock-0.0.1-SNAPSHOT.jar
