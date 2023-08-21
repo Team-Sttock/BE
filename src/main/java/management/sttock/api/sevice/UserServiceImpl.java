@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,20 +21,39 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void register(SignupRequest request) {
+
+
         validateNickname(request.getNickname());
         validateEmail(request.getEmail());
 
-        User user = User.builder()
-                .nickname(request.getNickname())
-                .password(request.getPassword())
-                .name(request.getName())
-                .genderCd(request.getGenderCd())
-                .email(request.getEmail())
-                .familyNum(request.getFamilyNum())
-                .birthday(LocalDate.parse(request.getBirthday()))
-                .build();
+        try {
+            User user = User.builder()
+                    .nickname(request.getNickname())
+                    .password(request.getPassword())
+                    .name(request.getName())
+                    .genderCd(request.getGenderCd())
+                    .email(request.getEmail())
+                    .familyNum(request.getFamilyNum())
+                    .birthday(LocalDate.parse(request.getBirthday()))
+                    .build();
 
-        userRepository.save(user);
+            userRepository.save(user);
+        } catch (Exception e) {
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입에 실패했습니다.");
+        }
+
+    }
+
+    @Override
+    public String findNickname(String email) {
+        try {
+            return userRepository.findByEmail(email).get().getNickname();
+        } catch (NoSuchElementException e) {
+            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        } catch (Exception e) {
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
+        }
+        return null;
     }
 
     @Override

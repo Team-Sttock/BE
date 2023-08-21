@@ -7,5 +7,5 @@ public interface UserService {
     void register(SignupRequest request);
     void validateNickname(String nickname);
     void validateEmail(String email);
-
+    String findNickname(String email);
 }

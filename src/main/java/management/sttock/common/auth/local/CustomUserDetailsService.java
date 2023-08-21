@@ -1,8 +1,8 @@
 package management.sttock.common.auth.local;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.db.entity.Member;
-import management.sttock.db.repository.MemberRepository;
+import management.sttock.db.entity.User;
+import management.sttock.db.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,24 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByNickname(nickname);
 
-        Member findMember = memberRepository.findOneByUserIdForLong(username);
-        if(findMember == null) {
+        if(user.isEmpty()) {
             throw new UsernameNotFoundException("일치하는 회원이 없습니다.");
         }
-
-        List<GrantedAuthority> authorities = Collections.emptyList();
-
-        return new org.springframework.security.core.userdetails.User(findMember.getUserId(), findMember.getUserPassword(),authorities);
+        List<GrantedAuthority> authorities = Collections.emptyList();//일단 권한 정보 비워둠
+        return new org.springframework.security.core.userdetails.User(user.get().getNickname(), user.get().getPassword(), authorities);
     }
-
 }
