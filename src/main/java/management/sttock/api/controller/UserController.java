@@ -2,6 +2,7 @@ package management.sttock.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.request.user.SignupRequest;
+import management.sttock.api.request.user.UpdateUserInfoRequest;
 import management.sttock.api.response.user.UserInfoResponse;
 import management.sttock.api.sevice.UserServiceImpl;
 import management.sttock.db.entity.User;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,6 +53,12 @@ public class UserController {
                 user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
 
         return ResponseEntity.status(200).body(response);
+    }
+    @PatchMapping("/user")
+    public ResponseEntity<Map<String, String>> updateUserInfo(@Valid @RequestBody UpdateUserInfoRequest requestDto, HttpServletRequest request,
+                                                              Authentication authentication){
+        userService.updateUserInfo(requestDto, request, authentication);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "성공적으로 회원 정보를 수정했습니다."));
     }
 
     private ConcurrentHashMap<String, String> setResponseMesssage(String commentMessage, String comment) {

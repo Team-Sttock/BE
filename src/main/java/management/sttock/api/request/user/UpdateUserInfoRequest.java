@@ -1,20 +1,14 @@
 package management.sttock.api.request.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
 
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.NotBlank;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SignupRequest {
-
+public class UpdateUserInfoRequest {
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
-    @NotBlank
-    @Size(min = 6)
-    private String password;
     @NotBlank
     private String name;
     @JsonProperty("gender_cd")
@@ -24,8 +18,4 @@ public class SignupRequest {
     @JsonProperty("family_num")
     private int familyNum;
     private String birthday;
-
-    public void changeEncodePassword(String encodedPassword){
-        this.password = encodedPassword;
-    }
 }

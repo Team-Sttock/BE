@@ -2,6 +2,7 @@ package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.request.user.SignupRequest;
+import management.sttock.api.request.user.UpdateUserInfoRequest;
 import management.sttock.common.exception.ValidateException;
 
 import management.sttock.db.entity.User;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -84,5 +85,29 @@ public class UserServiceImpl implements UserService {
             new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
         }
         return null;
+    }
+
+    @Transactional
+    @Override
+    public void updateUserInfo(UpdateUserInfoRequest requestDto, HttpServletRequest request, Authentication authentication) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        User user = userRepository.findByNickname(authentication.getName()).get();
+        boolean isUserEmpty = userRepository.findByNickname(authentication.getName()).isEmpty();
+        boolean updateUserNickname = !user.getNickname().equals(requestDto.getNickname());
+        boolean updateUserEmail = !user.getEmail().equals(requestDto.getEmail());
+
+        if(isUserEmpty) throw new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        if(updateUserNickname){
+            validateNickname(requestDto.getNickname());
+        }
+        if(updateUserEmail){
+            validateEmail(requestDto.getEmail());
+        }
+        try {
+            user.updateUser(requestDto, format.parse(requestDto.getBirthday()));
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 수정에 실패했습니다.");
+        }
     }
 }
