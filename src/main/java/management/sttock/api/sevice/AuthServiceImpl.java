@@ -3,6 +3,7 @@ package management.sttock.api.sevice;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.request.user.LoginRequest;
 import management.sttock.api.response.auth.CookieResponse;
+import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
 import management.sttock.common.exception.ValidateException;
 import management.sttock.db.entity.RefreshToken;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final CustomUserDetailsService userDetailsService;
     @Override
     @Transactional
     public CookieResponse login(LoginRequest request) {
@@ -44,14 +47,18 @@ public class AuthServiceImpl implements AuthService {
             if (isNotMatchPassword) {
                 throw new ValidateException(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다.");
             }
+//            UsernamePasswordAuthenticationToken authenticationToken =
+//                    new UsernamePasswordAuthenticationToken(request.getNickname(), request.getPassword());
+//            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+//            String token = tokenProvider.createToken(authentication);
+//            RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), authentication);
 
             //아직 role 추가 안함
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(request.getNickname(), request.getPassword());
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getNickname());
+            String token = tokenProvider.createToken(userDetails);
+            RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), userDetails);
 
-            String token = tokenProvider.createToken(authentication);
-            RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), authentication);
             refreshTokenRepository.save(refreshToken);
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
             Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());

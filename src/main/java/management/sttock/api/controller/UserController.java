@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import management.sttock.api.request.user.SignupRequest;
 import management.sttock.api.response.user.UserInfoResponse;
 import management.sttock.api.sevice.UserServiceImpl;
+import management.sttock.db.entity.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,11 +46,11 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<UserInfoResponse> getserInfo(){
-        /**
-         * 쿠키에서 UserId 찾아서 그에 맞는 회원 정보 반환
-         */
-        UserInfoResponse response = new UserInfoResponse();
+    public ResponseEntity<UserInfoResponse> getUserInfo(HttpServletRequest request, Authentication authentication){
+        User user = userService.getUserInfo(request, authentication);
+
+        UserInfoResponse response = new UserInfoResponse(user.getNickname(), user.getName(),
+                user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
 
         return ResponseEntity.status(200).body(response);
     }

@@ -7,12 +7,14 @@ import management.sttock.common.exception.ValidateException;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +43,6 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입에 실패했습니다.");
         }
-
     }
 
     @Override
@@ -71,5 +72,17 @@ public class UserServiceImpl implements UserService {
         if(duplicateEmail){
             throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 이메일입니다.");
         }
+    }
+
+    @Override
+    public User getUserInfo(HttpServletRequest request, Authentication authentication) {
+        try {
+            return userRepository.findByNickname(authentication.getName()).get();
+        } catch (NoSuchElementException e) {
+            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        } catch (Exception e) {
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
+        }
+        return null;
     }
 }

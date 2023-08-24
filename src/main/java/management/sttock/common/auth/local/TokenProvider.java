@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -55,18 +56,29 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+//    public String createToken(Authentication authentication) {
+//        String authorities = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.joining(","));
+//
+//        long now = (new Date()).getTime();
+//        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+//
+//        return Jwts.builder()
+//                .setSubject(authentication.getName())
+//                .claim(AUTHORITIES_KEY, authorities)
+//                .signWith(key, SignatureAlgorithm.HS512)
+//                .setExpiration(validity)
+//                .compact();
+//    }
+    public String createToken(UserDetails userDetails) {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
-
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .setSubject(userDetails.getUsername())
+                .claim(AUTHORITIES_KEY, userDetails.getAuthorities())
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .compact();
     }
@@ -75,13 +87,25 @@ public class TokenProvider implements InitializingBean {
         if (tokenName.equals("refreshToken")) return refreshTokenValidityInSeconds;
         return 0;
     }
-    public RefreshToken createRefreshToken(User user, Authentication authentication) {
-
+//    public RefreshToken createRefreshToken(User user, Authentication authentication) {
+//        LocalDateTime issuedDt = LocalDateTime.now();
+//        LocalDateTime expiredDt = issuedDt.plusSeconds(tokenValidityInMilliseconds);
+//
+//        String jwt = Jwts.builder()
+//                .setSubject(authentication.getName())
+//                .signWith(key, SignatureAlgorithm.HS512)
+//                .compact();
+//
+//        RefreshToken refreshToken = new RefreshToken(user, jwt, issuedDt, expiredDt);
+//        RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
+//        return savedRefreshToken;
+//    }
+    public RefreshToken createRefreshToken(User user, UserDetails userDetails){
         LocalDateTime issuedDt = LocalDateTime.now();
         LocalDateTime expiredDt = issuedDt.plusSeconds(tokenValidityInMilliseconds);
 
         String jwt = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(userDetails.getUsername())
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
@@ -103,7 +127,6 @@ public class TokenProvider implements InitializingBean {
 
         org.springframework.security.core.userdetails.User principal =
                 new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
-
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -150,7 +173,7 @@ public class TokenProvider implements InitializingBean {
      */
     public String renewToken(RefreshToken refreshToken){
         valicateForReIssue(refreshToken);
-        return generateNewToken();
+        return generateNewToken(); //여기 회원 정보 추용
     }
 
 
@@ -191,7 +214,6 @@ public class TokenProvider implements InitializingBean {
     }
 
     private boolean findByToken(RefreshToken refreshToken) {
-//        Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshToken.getToken());
         List<RefreshToken> findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken());
 
         if(findRefreshToken.isEmpty()) {
