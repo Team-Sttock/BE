@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
 
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -60,7 +59,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void validateNickname(String nickname) {
-
         boolean duplicateNickname = !userRepository.findByNickname(nickname).isEmpty();
         if(duplicateNickname){
             throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다.");
@@ -91,12 +89,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserInfo(UpdateUserInfoRequest requestDto, HttpServletRequest request, Authentication authentication) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        User user = userRepository.findByNickname(authentication.getName()).get();
         boolean isUserEmpty = userRepository.findByNickname(authentication.getName()).isEmpty();
+
+        if(isUserEmpty) throw new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+
+        User user = userRepository.findByNickname(authentication.getName()).get();
         boolean updateUserNickname = !user.getNickname().equals(requestDto.getNickname());
         boolean updateUserEmail = !user.getEmail().equals(requestDto.getEmail());
 
-        if(isUserEmpty) throw new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         if(updateUserNickname){
             validateNickname(requestDto.getNickname());
         }
