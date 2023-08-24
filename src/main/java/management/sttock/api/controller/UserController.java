@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<UserInfoResponse> getUserInfo(){
+    public ResponseEntity<UserInfoResponse> getserInfo(){
         /**
          * 쿠키에서 UserId 찾아서 그에 맞는 회원 정보 반환
          */

@@ -12,4 +12,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadReqException(ValidateException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<ErrorResponse> handleBadReqException(TokenRefreshException e) {
+        return ResponseEntity.status(403).body(new ErrorResponse(e.getMessage()));
+    }
+
 }

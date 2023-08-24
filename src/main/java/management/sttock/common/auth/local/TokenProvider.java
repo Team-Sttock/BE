@@ -71,8 +71,8 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
     public long getTokenExpiration(String tokenName) {
-        if(tokenName == "accessToken") return tokenValidityInMilliseconds;
-        if (tokenName == "refreshToken") return refreshTokenValidityInSeconds;
+        if(tokenName.equals("accessToken")) return tokenValidityInMilliseconds;
+        if (tokenName.equals("refreshToken")) return refreshTokenValidityInSeconds;
         return 0;
     }
     public RefreshToken createRefreshToken(User user, Authentication authentication) {
@@ -138,7 +138,7 @@ public class TokenProvider implements InitializingBean {
      * 2. refreshToken 유효성 검사(만료, 유효 여부)
      * 3. 저장소에 refreshToken 존재 여부 & 소유자 검증
      */
-    public void valicateForReIssue(RefreshToken refreshToken) {
+    private void valicateForReIssue(RefreshToken refreshToken) {
              validateRefreshToken(refreshToken);
              checkExpirationDate(refreshToken);
              findByToken(refreshToken);
@@ -148,7 +148,13 @@ public class TokenProvider implements InitializingBean {
     /**
      * accessToken 생성 로직
      */
-    public String generateNewToken() {
+    public String renewToken(RefreshToken refreshToken){
+        valicateForReIssue(refreshToken);
+        return generateNewToken();
+    }
+
+
+    private String generateNewToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String authorities = authentication.getAuthorities().stream()
@@ -162,39 +168,43 @@ public class TokenProvider implements InitializingBean {
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .compact();
     }
 
-    public boolean validateRefreshToken(RefreshToken refreshToken) {
+    private boolean validateRefreshToken(RefreshToken refreshToken) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken.getToken());
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw new TokenRefreshException(refreshToken.getToken(), "유효하지 않은 RefreshToken 입니다.");
+            throw new TokenRefreshException("유효하지 않은 RefreshToken 입니다.");
         }
     }
 
-    public boolean checkExpirationDate(RefreshToken refreshToken) {
+    private boolean checkExpirationDate(RefreshToken refreshToken) {
         if(refreshToken.getExpiredDt().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new TokenRefreshException(refreshToken.getToken(), "RefreshToken 이 만료되었습니다. 다시 로그인해 주십시오");
+            throw new TokenRefreshException("RefreshToken 이 만료되었습니다. 다시 로그인해 주십시오");
         }
         return true;
     }
 
-    public boolean findByToken(RefreshToken refreshToken) {
-        Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshToken.getToken());
+    private boolean findByToken(RefreshToken refreshToken) {
+//        Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshToken.getToken());
+        List<RefreshToken> findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken());
+
         if(findRefreshToken.isEmpty()) {
-            throw new TokenRefreshException(refreshToken.getToken(), "존재하지 않는 RefreshToken 입니다.");
+            throw new TokenRefreshException("존재하지 않는 RefreshToken 입니다.");
         }
         return true;
     }
 
-    public boolean checkTokenUser(RefreshToken refreshToken) {
-        Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshToken.getToken());
-        if (refreshToken.getUser().equals(findRefreshToken.get().getUser())) {
-            throw new TokenRefreshException(refreshToken.getToken(), "소유자가 일치하지 않습니다.");
+    private boolean checkTokenUser(RefreshToken refreshToken) {
+        RefreshToken findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken()).get(0);
+        boolean isNotEqual = !refreshToken.getUser().equals(findRefreshToken.getUser());
+        if (isNotEqual) {
+            throw new TokenRefreshException("소유자가 일치하지 않습니다.");
         }
         return true;
     }

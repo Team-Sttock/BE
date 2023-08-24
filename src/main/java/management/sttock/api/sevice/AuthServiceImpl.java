@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -51,11 +54,53 @@ public class AuthServiceImpl implements AuthService {
             RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), authentication);
             refreshTokenRepository.save(refreshToken);
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
-            Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", String.valueOf(refreshToken));
+            Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
+            System.out.println("token = " + token);
+            System.out.println("refreshToken.getToken = " + refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
         } catch (NoSuchElementException e) {
             throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디를 잘못 입력했습니다.");
         }
+    }
+
+    @Transactional
+    @Override
+    public void logout(HttpServletRequest request) {
+        try {
+            RefreshToken refreshToken = getRefreshToken(request);
+            System.out.println("refreshToken = " + refreshToken);
+            refreshTokenRepository.delete(refreshToken);
+        } catch (Exception e) {
+            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "로그아웃에 실패했습니다. 다시 시도해 주세요.");
+        }
+    }
+
+    @Transactional
+    @Override
+    public CookieResponse refreshToken(HttpServletRequest request) {
+        RefreshToken refreshToken = getRefreshToken(request);
+        String renewToken = tokenProvider.renewToken(refreshToken);
+
+        Cookie accessTokenInCookie = setTokenInCookie("accessToken", renewToken);
+        Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
+
+        return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
+    }
+
+    private RefreshToken getRefreshToken(HttpServletRequest request) {
+        String token = getRefreshTokenInCookie(request);
+        List<RefreshToken> refreshTokens = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(token);
+        if(!refreshTokens.isEmpty()) {
+            return refreshTokens.get(0);
+        }
+        return null;
+    }
+
+    private static String getRefreshTokenInCookie(HttpServletRequest request) {
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst().orElseThrow(() -> new ValidateException(HttpStatus.BAD_REQUEST, "세션이 만료되었거나 유효하지 않습니다."));
     }
 
     private Cookie setTokenInCookie(String tokenName, String token) {

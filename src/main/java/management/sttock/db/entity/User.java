@@ -1,12 +1,10 @@
 package management.sttock.db.entity;
 
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -30,10 +28,10 @@ public class User {
     @Column(name = "family_num")
     private int familyNum;
 
-    private LocalDate birthday;
+    private Date birthday;
 
     public User(Long id, String nickname, String password, String name,
-                int genderCd, String email, int familyNum, LocalDate birthday) {
+                int genderCd, String email, int familyNum, Date birthday) {
         this.id = id;
         this.nickname = nickname;
         this.password = password;

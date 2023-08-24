@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
@@ -21,10 +22,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void register(SignupRequest request) {
-
-
         validateNickname(request.getNickname());
         validateEmail(request.getEmail());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             User user = User.builder()
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
                     .genderCd(request.getGenderCd())
                     .email(request.getEmail())
                     .familyNum(request.getFamilyNum())
-                    .birthday(LocalDate.parse(request.getBirthday()))
+                    .birthday(format.parse(request.getBirthday()))
                     .build();
 
             userRepository.save(user);
