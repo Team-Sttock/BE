@@ -1,4 +1,4 @@
-package management.sttock.api.response.auth;
+package management.sttock.api.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

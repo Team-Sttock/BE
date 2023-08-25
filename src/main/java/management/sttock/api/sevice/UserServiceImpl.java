@@ -1,8 +1,8 @@
 package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.api.request.user.SignupRequest;
-import management.sttock.api.request.user.UpdateUserInfoRequest;
+import management.sttock.api.dto.user.SignupRequest;
+import management.sttock.api.dto.user.UserInfo;
 import management.sttock.common.exception.ValidateException;
 
 import management.sttock.db.entity.User;
@@ -17,11 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    @Transactional
     @Override
     public void register(SignupRequest request) {
         validateNickname(request.getNickname());
@@ -74,9 +72,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserInfo(HttpServletRequest request, Authentication authentication) {
+    public UserInfo getUserInfo(HttpServletRequest request, Authentication authentication) {
         try {
-            return userRepository.findByNickname(authentication.getName()).get();
+            User user = userRepository.findByNickname(authentication.getName()).get();
+            return new UserInfo(user.getNickname(), user.getName(),
+                    user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
@@ -85,9 +85,8 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    @Transactional
     @Override
-    public void updateUserInfo(UpdateUserInfoRequest requestDto, HttpServletRequest request, Authentication authentication) {
+    public void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         boolean isUserEmpty = userRepository.findByNickname(authentication.getName()).isEmpty();
 

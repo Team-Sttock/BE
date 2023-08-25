@@ -1,4 +1,4 @@
-package management.sttock.api.request.user;
+package management.sttock.api.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -10,16 +10,16 @@ import javax.validation.constraints.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignupRequest {
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "닉네임은 영어와 숫자로만 구성되어야 합니다.")
     private String nickname;
-    @NotBlank
-    @Size(min = 6)
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{6,}$",
+            message = "비밀번호는 영어, 숫자, 특수문자를 포함하여 6자리 이상이어야 합니다.")
     private String password;
     @NotBlank
     private String name;
     @JsonProperty("gender_cd")
     private int genderCd;
-    @NotBlank(message = "이메일을 입력해주세요.")
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$\n", message = "이메일을 입력해주세요")
     private String email;
     @JsonProperty("family_num")
     private int familyNum;

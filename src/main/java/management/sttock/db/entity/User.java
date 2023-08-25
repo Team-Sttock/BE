@@ -1,10 +1,9 @@
 package management.sttock.db.entity;
 
 import lombok.*;
-import management.sttock.api.request.user.UpdateUserInfoRequest;
+import management.sttock.api.dto.user.UserInfo;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.Date;
 
 @Builder
@@ -43,7 +42,7 @@ public class User {
         this.birthday = birthday;
     }
 
-    public void updateUser(final UpdateUserInfoRequest request, Date birthday){
+    public void updateUser(final UserInfo request, Date birthday){
         this.nickname = request.getNickname();
         this.name = request.getName();
         this.genderCd = request.getGenderCd();

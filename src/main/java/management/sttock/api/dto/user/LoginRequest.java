@@ -1,4 +1,4 @@
-package management.sttock.api.request.user;
+package management.sttock.api.dto.user;
 
 import lombok.Getter;
 

@@ -1,8 +1,7 @@
 package management.sttock.api.sevice;
 
-import management.sttock.api.request.user.SignupRequest;
-import management.sttock.api.request.user.UpdateUserInfoRequest;
-import management.sttock.db.entity.User;
+import management.sttock.api.dto.user.SignupRequest;
+import management.sttock.api.dto.user.UserInfo;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,7 @@ public interface UserService {
     void validateEmail(String email);
     String findNickname(String email);
 
-    User getUserInfo(HttpServletRequest request, Authentication authentication);
+    UserInfo getUserInfo(HttpServletRequest request, Authentication authentication);
 
-    void updateUserInfo(UpdateUserInfoRequest requestDto, HttpServletRequest request, Authentication authentication);
+    void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication);
 }

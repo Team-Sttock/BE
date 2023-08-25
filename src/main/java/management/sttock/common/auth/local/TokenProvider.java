@@ -55,22 +55,6 @@ public class TokenProvider implements InitializingBean {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-
-//    public String createToken(Authentication authentication) {
-//        String authorities = authentication.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
-//
-//        long now = (new Date()).getTime();
-//        Date validity = new Date(now + this.tokenValidityInMilliseconds);
-//
-//        return Jwts.builder()
-//                .setSubject(authentication.getName())
-//                .claim(AUTHORITIES_KEY, authorities)
-//                .signWith(key, SignatureAlgorithm.HS512)
-//                .setExpiration(validity)
-//                .compact();
-//    }
     public String createToken(UserDetails userDetails) {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
@@ -87,19 +71,7 @@ public class TokenProvider implements InitializingBean {
         if (tokenName.equals("refreshToken")) return refreshTokenValidityInSeconds;
         return 0;
     }
-//    public RefreshToken createRefreshToken(User user, Authentication authentication) {
-//        LocalDateTime issuedDt = LocalDateTime.now();
-//        LocalDateTime expiredDt = issuedDt.plusSeconds(tokenValidityInMilliseconds);
-//
-//        String jwt = Jwts.builder()
-//                .setSubject(authentication.getName())
-//                .signWith(key, SignatureAlgorithm.HS512)
-//                .compact();
-//
-//        RefreshToken refreshToken = new RefreshToken(user, jwt, issuedDt, expiredDt);
-//        RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
-//        return savedRefreshToken;
-//    }
+
     public RefreshToken createRefreshToken(User user, UserDetails userDetails){
         LocalDateTime issuedDt = LocalDateTime.now();
         LocalDateTime expiredDt = issuedDt.plusSeconds(tokenValidityInMilliseconds);
@@ -155,12 +127,6 @@ public class TokenProvider implements InitializingBean {
         return subject;
     }
 
-    /**
-     * accessToken 갱신을 위한 validation 처리
-     * 1. accessToken 유효성 검사(유효 여부)
-     * 2. refreshToken 유효성 검사(만료, 유효 여부)
-     * 3. 저장소에 refreshToken 존재 여부 & 소유자 검증
-     */
     private void valicateForReIssue(RefreshToken refreshToken) {
              validateRefreshToken(refreshToken);
              checkExpirationDate(refreshToken);
@@ -168,14 +134,10 @@ public class TokenProvider implements InitializingBean {
              checkTokenUser(refreshToken);
     }
 
-    /**
-     * accessToken 생성 로직
-     */
     public String renewToken(RefreshToken refreshToken){
         valicateForReIssue(refreshToken);
         return generateNewToken(); //여기 회원 정보 추용
     }
-
 
     private String generateNewToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

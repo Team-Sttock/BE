@@ -1,8 +1,8 @@
 package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.api.request.user.LoginRequest;
-import management.sttock.api.response.auth.CookieResponse;
+import management.sttock.api.dto.user.LoginRequest;
+import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
 import management.sttock.common.exception.ValidateException;
@@ -11,9 +11,7 @@ import management.sttock.db.entity.User;
 import management.sttock.db.repository.AuthRespository;
 import management.sttock.db.repository.RefreshTokenRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,8 +60,6 @@ public class AuthServiceImpl implements AuthService {
             refreshTokenRepository.save(refreshToken);
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
             Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
-            System.out.println("token = " + token);
-            System.out.println("refreshToken.getToken = " + refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
         } catch (NoSuchElementException e) {
             throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디를 잘못 입력했습니다.");
