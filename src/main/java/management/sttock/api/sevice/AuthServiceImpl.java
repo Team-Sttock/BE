@@ -45,14 +45,6 @@ public class AuthServiceImpl implements AuthService {
             if (isNotMatchPassword) {
                 throw new ValidateException(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다.");
             }
-//            UsernamePasswordAuthenticationToken authenticationToken =
-//                    new UsernamePasswordAuthenticationToken(request.getNickname(), request.getPassword());
-//            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-//            String token = tokenProvider.createToken(authentication);
-//            RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), authentication);
-
-            //아직 role 추가 안함
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getNickname());
             String token = tokenProvider.createToken(userDetails);
             RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), userDetails);
