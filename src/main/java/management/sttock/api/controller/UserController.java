@@ -70,10 +70,15 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("message", "회원 탈퇴하였습니다."));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity userMe(HttpServletRequest request, Authentication authentication){
+        userService.userMe(request, authentication);
+        return ResponseEntity.ok().build();
+    }
+
     private ConcurrentHashMap<String, String> setResponseMesssage(String commentMessage, String comment) {
         ConcurrentHashMap<String, String> response = new ConcurrentHashMap<>();
         response.put(commentMessage, comment);
         return response;
     }
-
 }

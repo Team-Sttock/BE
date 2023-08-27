@@ -20,4 +20,6 @@ public interface UserService {
     void withdrawUser(HttpServletRequest request, Authentication authentication);
 
     void updatePassword(String password, HttpServletRequest request, Authentication authentication);
+
+    void userMe(HttpServletRequest request, Authentication authentication);
 }

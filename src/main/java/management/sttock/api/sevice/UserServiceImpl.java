@@ -141,4 +141,15 @@ public class UserServiceImpl implements UserService {
             throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴에 실패했습니다.");
         }
     }
+
+    @Override
+    public void userMe(HttpServletRequest request, Authentication authentication) {
+        try {
+            userRepository.findByNickname(authentication.getName());
+        } catch (NoSuchElementException e) {
+            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        } catch (Exception e) {
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+        }
+    }
 }

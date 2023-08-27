@@ -11,7 +11,6 @@ import management.sttock.db.entity.User;
 import management.sttock.db.repository.AuthRespository;
 import management.sttock.db.repository.RefreshTokenRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
