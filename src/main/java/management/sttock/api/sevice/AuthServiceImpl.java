@@ -32,7 +32,6 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final CustomUserDetailsService userDetailsService;
     @Override
     @Transactional
@@ -63,7 +62,6 @@ public class AuthServiceImpl implements AuthService {
     public void logout(HttpServletRequest request) {
         try {
             RefreshToken refreshToken = getRefreshToken(request);
-            System.out.println("refreshToken = " + refreshToken);
             refreshTokenRepository.delete(refreshToken);
         } catch (Exception e) {
             throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "로그아웃에 실패했습니다. 다시 시도해 주세요.");

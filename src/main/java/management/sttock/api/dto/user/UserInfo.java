@@ -16,7 +16,7 @@ public class UserInfo {
     private String name;
     @JsonProperty("gender_cd")
     private int genderCd;
-    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$\n", message = "이메일을 입력해주세요")
+    @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$", message = "이메일을 입력해주세요")
     private String email;
     @JsonProperty("family_num")
     private int familyNum;

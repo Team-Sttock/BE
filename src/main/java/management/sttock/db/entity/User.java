@@ -4,12 +4,15 @@ import lombok.*;
 import management.sttock.api.dto.user.UserInfo;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Builder
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -30,6 +33,9 @@ public class User {
 
     private Date birthday;
 
+    @OneToMany(mappedBy = "user")
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
+
     public User(Long id, String nickname, String password, String name,
                 int genderCd, String email, int familyNum, Date birthday) {
         this.id = id;
@@ -49,5 +55,8 @@ public class User {
         this.email = request.getEmail();
         this.familyNum = request.getFamilyNum();
         this.birthday = birthday;
+    }
+    public void updatePassword(String password){
+        this.password = password;
     }
 }

@@ -6,6 +6,7 @@ import management.sttock.api.dto.user.UserInfo;
 import management.sttock.common.exception.ValidateException;
 
 import management.sttock.db.entity.User;
+import management.sttock.db.repository.RefreshTokenRepository;
 import management.sttock.db.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     @Override
     public void register(SignupRequest request) {
         validateNickname(request.getNickname());
@@ -107,6 +110,35 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         } catch (Exception e) {
             throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 수정에 실패했습니다.");
+        }
+    }
+
+    @Override
+    public void updatePassword(String password, HttpServletRequest request, Authentication authentication) {
+        try {
+            User user = userRepository.findByNickname(authentication.getName()).get();
+            user.updatePassword(password);
+            userRepository.save(user);
+        } catch (NoSuchElementException e) {
+            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        } catch (Exception e) {
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 변경에 실패했습니다.");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void withdrawUser(HttpServletRequest request, Authentication authentication) {
+        Optional<User> user = userRepository.findByNickname(authentication.getName());
+        boolean isAuthenticated = user.isEmpty();
+        if(isAuthenticated){
+            throw new ValidateException(HttpStatus.UNAUTHORIZED, "로그인 후 이용가능 합니다.");
+        }
+        try {
+            refreshTokenRepository.deleteAllByUser(user.get());
+            userRepository.delete(user.get());
+        } catch (Exception e) {
+            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴에 실패했습니다.");
         }
     }
 }

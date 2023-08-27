@@ -1,6 +1,7 @@
 package management.sttock.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 import management.sttock.api.sevice.UserServiceImpl;
@@ -53,6 +54,20 @@ public class UserController {
                                                               Authentication authentication){
         userService.updateUserInfo(requestDto, request, authentication);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "성공적으로 회원 정보를 수정했습니다."));
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody PasswordRequest requestDto, HttpServletRequest request,
+                                                              Authentication authentication){
+        String password = passwordEncoder.encode(requestDto.getPassword());
+        userService.updatePassword(password, request, authentication);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "비밀번호를 성공적으로 변경했습니다."));
+    }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Map<String, String>> withdrawUser(HttpServletRequest request, Authentication authentication){
+        userService.withdrawUser(request, authentication);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "회원 탈퇴하였습니다."));
     }
 
     private ConcurrentHashMap<String, String> setResponseMesssage(String commentMessage, String comment) {

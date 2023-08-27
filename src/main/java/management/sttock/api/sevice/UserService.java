@@ -16,4 +16,8 @@ public interface UserService {
     UserInfo getUserInfo(HttpServletRequest request, Authentication authentication);
 
     void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication);
+
+    void withdrawUser(HttpServletRequest request, Authentication authentication);
+
+    void updatePassword(String password, HttpServletRequest request, Authentication authentication);
 }
