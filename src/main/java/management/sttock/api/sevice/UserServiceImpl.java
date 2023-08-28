@@ -23,6 +23,18 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final MailSendServiceImpl mailSendService;
+
+    @Override
+    public void sendAuthNumber(String email) {
+        mailSendService.sendAuthNumber(email);
+    }
+
+    @Override
+    public void checkAuthNumber(String email, int authNumber) {
+        mailSendService.checkAuthNumber(email, authNumber);
+    }
+
     @Override
     public void register(SignupRequest request) {
         validateNickname(request.getNickname());
@@ -56,6 +68,15 @@ public class UserServiceImpl implements UserService {
             new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
         }
         return null;
+    }
+    @Override
+    public void updateTempPassword(String email, String nickname) {
+        boolean isNotFoundUser = !findNickname(email).equals(nickname);
+        if (isNotFoundUser) {
+            throw new ValidateException(HttpStatus.NOT_FOUND, "일치하는 회원이 없습니다.");
+        }
+        String tempPassword = mailSendService.sendTempPassword(email);
+        updatePassword(tempPassword, nickname);
     }
 
     @Override
@@ -116,14 +137,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(String password, HttpServletRequest request, Authentication authentication) {
         try {
-            User user = userRepository.findByNickname(authentication.getName()).get();
-            user.updatePassword(password);
-            userRepository.save(user);
+            updatePassword(password, authentication.getName());
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
             new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 변경에 실패했습니다.");
         }
+    }
+
+    private void updatePassword(String password, String nickname) {
+        User user = userRepository.findByNickname(nickname).get();
+        user.updatePassword(password);
+        userRepository.save(user);
     }
 
     @Transactional

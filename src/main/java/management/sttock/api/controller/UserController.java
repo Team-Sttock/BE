@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,10 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserServiceImpl userService;
+
+    @GetMapping("/email")
+    public ResponseEntity<Map<String, String>> sendAuthNumber(@Valid @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$",
+            message = "이메일을 입력해주세요") @RequestParam String email){
+        userService.sendAuthNumber(email);
+        return ResponseEntity.status(201).body(setResponseMesssage("message", "인증번호를 보냈습니다."));
+    }
+    @PostMapping("/email")
+    public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam int authNumber){
+        userService.checkAuthNumber(email, authNumber);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "이메일 인증을 성공했습니다."));
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequest request){
         request.changeEncodePassword(passwordEncoder.encode(request.getPassword()));
-        //이메일로 회원 인증 로직 추가
+
+        //이메일로 인증 ok되면 실행
         userService.register(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
@@ -38,9 +53,7 @@ public class UserController {
     @PostMapping("/user/password/recover")
     public ResponseEntity<Map<String, String>> findPassword(@RequestParam String email,
                                                @RequestParam String nickname){
-        /**
-         * 이메일로 임시 비밀번호 전송 로직 추가
-         */
+        userService.updateTempPassword(email, nickname);
         return ResponseEntity.status(200).body(setResponseMesssage("message","입력하신 이메일로 임시 비밀번호가 전송되었습니다"));
     }
 

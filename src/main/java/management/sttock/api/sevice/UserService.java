@@ -7,19 +7,16 @@ import org.springframework.security.core.Authentication;
 import javax.servlet.http.HttpServletRequest;
 
 public interface UserService {
-
+    void sendAuthNumber(String email);
+    void checkAuthNumber(String email, int authNumber);
     void register(SignupRequest request);
     void validateNickname(String nickname);
     void validateEmail(String email);
     String findNickname(String email);
-
     UserInfo getUserInfo(HttpServletRequest request, Authentication authentication);
-
     void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication);
-
     void withdrawUser(HttpServletRequest request, Authentication authentication);
-
     void updatePassword(String password, HttpServletRequest request, Authentication authentication);
-
     void userMe(HttpServletRequest request, Authentication authentication);
+    void updateTempPassword(String email, String nickname);
 }

@@ -9,13 +9,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ValidateException.class)
-    public ResponseEntity<ErrorResponse> handleBadReqException(ValidateException e) {
+    public ResponseEntity<ErrorResponse> handleValidateException(ValidateException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(TokenRefreshException.class)
-    public ResponseEntity<ErrorResponse> handleBadReqException(TokenRefreshException e) {
+    public ResponseEntity<ErrorResponse> handleTokenRefreshException(TokenRefreshException e) {
         return ResponseEntity.status(403).body(new ErrorResponse(e.getMessage()));
     }
-
 }
