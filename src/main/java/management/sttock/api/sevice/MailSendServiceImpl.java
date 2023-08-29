@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -102,8 +101,6 @@ public class MailSendServiceImpl implements MailSendService {
     public void sendEmailForAuth(String title, String email, String content) {
         try {
             sendMail(title, email, content);
-
-            //이메일과 인증번호 저장 코드 추가
         } catch (MessagingException e) {
             throw new ServerException("인증번호 전송 실패");
         }

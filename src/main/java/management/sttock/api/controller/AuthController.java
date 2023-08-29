@@ -2,7 +2,7 @@ package management.sttock.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import management.sttock.api.dto.user.LoginRequest;
+import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.api.sevice.AuthServiceImpl;
 import org.springframework.http.ResponseEntity;

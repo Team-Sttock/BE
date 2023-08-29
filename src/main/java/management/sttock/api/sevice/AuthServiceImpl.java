@@ -1,10 +1,11 @@
 package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.api.dto.user.LoginRequest;
+import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
+import management.sttock.common.exception.ServerException;
 import management.sttock.common.exception.ValidateException;
 import management.sttock.db.entity.RefreshToken;
 import management.sttock.db.entity.User;
@@ -53,6 +54,8 @@ public class AuthServiceImpl implements AuthService {
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
         } catch (NoSuchElementException e) {
             throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디를 잘못 입력했습니다.");
+        } catch (Exception e) {
+            throw new ServerException("일시적인 오류로 로그인할 수 없습니다. 잠시 후 다시 시도해주세요.");
         }
     }
 

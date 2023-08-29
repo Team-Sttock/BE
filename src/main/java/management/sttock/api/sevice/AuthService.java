@@ -1,6 +1,6 @@
 package management.sttock.api.sevice;
 
-import management.sttock.api.dto.user.LoginRequest;
+import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 
 import javax.servlet.http.HttpServletRequest;
