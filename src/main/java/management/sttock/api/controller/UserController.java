@@ -38,8 +38,6 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequest request){
         request.changeEncodePassword(passwordEncoder.encode(request.getPassword()));
-
-        //이메일로 인증 ok되면 실행
         userService.register(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }

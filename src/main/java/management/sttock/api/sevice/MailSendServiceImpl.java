@@ -32,17 +32,31 @@ public class MailSendServiceImpl implements MailSendService {
     public int sendAuthNumber(String email) {
         int authNumber = makeTempNumber();
         buildMail(authNumber, email);
-        VerificationCode verificationCode = new VerificationCode(email, authNumber);
+        VerificationCode verificationCode = new VerificationCode(email, authNumber,false);
         verificationCodeRepository.save(verificationCode);
         return authNumber;
     }
 
     @Override
     public void checkAuthNumber(String email, int authNumber) {
-        int expectedAuthNumber = verificationCodeRepository.findById(email).get().getAuthNumber();
+        VerificationCode verificationCode = verificationCodeRepository.findById(email).get();
+        int expectedAuthNumber = verificationCode.getAuthNumber();
         boolean isNotMatchAuthCode = expectedAuthNumber != authNumber;
         if (isNotMatchAuthCode) {
             throw new ValidateException(HttpStatus.BAD_REQUEST, "인증 번호가 잘못되었습니다.");
+        }
+        verificationCode.setVerificationStatus(true);
+        verificationCodeRepository.save(verificationCode);
+    }
+
+    @Override
+    public void checkVerificationStatus(String email) {
+        boolean verificationStatus = verificationCodeRepository.findById(email)
+                .map(VerificationCode::isVerificationStatus)
+                .orElse(false);
+
+        if(!verificationStatus) {
+            throw new ValidateException(HttpStatus.BAD_REQUEST, "이메일 인증 후 다시 회원가입을 시도해주세요");
         }
     }
 

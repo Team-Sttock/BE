@@ -10,4 +10,6 @@ public interface MailSendService {
     void buildTempPasswordMail(String tempPassword, String email);
     void sendMailForPassword(String title, String email, String content);
     void buildMail(int checkNumber,String email);
+
+    void checkVerificationStatus(String email);
 }

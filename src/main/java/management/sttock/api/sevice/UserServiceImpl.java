@@ -42,6 +42,8 @@ public class UserServiceImpl implements UserService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
+            mailSendService.checkVerificationStatus(request.getEmail());
+
             User user = User.builder()
                     .nickname(request.getNickname())
                     .password(request.getPassword())
