@@ -42,7 +42,7 @@ public class TokenProvider implements InitializingBean {
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
-            @Value("${REFRESH_VALIDATE_SECONDS}") long refreshTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
             RefreshTokenRepository refreshTokenRepository) {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds;
@@ -74,7 +74,7 @@ public class TokenProvider implements InitializingBean {
 
     public RefreshToken createRefreshToken(User user, UserDetails userDetails){
         LocalDateTime issuedDt = LocalDateTime.now();
-        LocalDateTime expiredDt = issuedDt.plusSeconds(tokenValidityInMilliseconds);
+        LocalDateTime expiredDt = issuedDt.plusSeconds(refreshTokenValidityInSeconds);
 
         String jwt = Jwts.builder()
                 .setSubject(userDetails.getUsername())
