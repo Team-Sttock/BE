@@ -1,7 +1,10 @@
 package management.sttock.common.auth.local;
 
+import lombok.RequiredArgsConstructor;
+import management.sttock.common.exception.ValidateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -11,20 +14,16 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
 
+@RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
-
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-
-    private TokenProvider tokenProvider;
-
-    public JwtFilter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
+    private final TokenProvider tokenProvider;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -40,15 +39,13 @@ public class JwtFilter extends GenericFilterBean {
         } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
-
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> "accessToken".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst().orElseThrow(() -> new ValidateException(HttpStatus.BAD_REQUEST, "세션이 만료되었거나 유효하지 않습니다."));
     }
 }

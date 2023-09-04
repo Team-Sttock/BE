@@ -3,6 +3,10 @@ package management.sttock.common.auth.local;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import management.sttock.common.exception.TokenRefreshException;
+import management.sttock.db.entity.RefreshToken;
+import management.sttock.db.entity.User;
+import management.sttock.db.repository.RefreshTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,13 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,17 +30,24 @@ public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
 
+    private final RefreshTokenRepository refreshTokenRepository;
+
     private final String secret;
     private final long tokenValidityInMilliseconds;
 
     private Key key;
 
+    private final long refreshTokenValidityInSeconds;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            RefreshTokenRepository refreshTokenRepository) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.tokenValidityInMilliseconds = tokenValidityInSeconds;
+        this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
@@ -44,21 +55,35 @@ public class TokenProvider implements InitializingBean {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+    public String createToken(UserDetails userDetails) {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
-
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .setSubject(userDetails.getUsername())
+                .claim(AUTHORITIES_KEY, userDetails.getAuthorities())
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .compact();
+    }
+    public long getTokenExpiration(String tokenName) {
+        if(tokenName.equals("accessToken")) return tokenValidityInMilliseconds;
+        if (tokenName.equals("refreshToken")) return refreshTokenValidityInSeconds;
+        return 0;
+    }
+
+    public RefreshToken createRefreshToken(User user, UserDetails userDetails){
+        LocalDateTime issuedDt = LocalDateTime.now();
+        LocalDateTime expiredDt = issuedDt.plusSeconds(refreshTokenValidityInSeconds);
+
+        String jwt = Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        RefreshToken refreshToken = new RefreshToken(user, jwt, issuedDt, expiredDt);
+        RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
+        return savedRefreshToken;
     }
 
     public Authentication getAuthentication(String token) {
@@ -72,8 +97,8 @@ public class TokenProvider implements InitializingBean {
         Collection<? extends GrantedAuthority> authorities =
                 Collections.emptyList();
 
-        User principal = new User(claims.getSubject(), "", authorities);
-
+        org.springframework.security.core.userdetails.User principal =
+                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -100,5 +125,71 @@ public class TokenProvider implements InitializingBean {
                 .getBody()
                 .getSubject();
         return subject;
+    }
+
+    private void valicateForReIssue(RefreshToken refreshToken) {
+             validateRefreshToken(refreshToken);
+             checkExpirationDate(refreshToken);
+             findByToken(refreshToken);
+             checkTokenUser(refreshToken);
+    }
+
+    public String renewToken(RefreshToken refreshToken){
+        valicateForReIssue(refreshToken);
+        return generateNewToken(); //여기 회원 정보 추용
+    }
+
+    private String generateNewToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
+                .compact();
+    }
+
+    private boolean validateRefreshToken(RefreshToken refreshToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken.getToken());
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            throw new TokenRefreshException("유효하지 않은 RefreshToken 입니다.");
+        }
+    }
+
+    private boolean checkExpirationDate(RefreshToken refreshToken) {
+        if(refreshToken.getExpiredDt().isBefore(LocalDateTime.now())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new TokenRefreshException("RefreshToken 이 만료되었습니다. 다시 로그인해 주십시오");
+        }
+        return true;
+    }
+
+    private boolean findByToken(RefreshToken refreshToken) {
+        List<RefreshToken> findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken());
+
+        if(findRefreshToken.isEmpty()) {
+            throw new TokenRefreshException("존재하지 않는 RefreshToken 입니다.");
+        }
+        return true;
+    }
+
+    private boolean checkTokenUser(RefreshToken refreshToken) {
+        RefreshToken findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken()).get(0);
+        boolean isNotEqual = !refreshToken.getUser().equals(findRefreshToken.getUser());
+        if (isNotEqual) {
+            throw new TokenRefreshException("소유자가 일치하지 않습니다.");
+        }
+        return true;
     }
 }

@@ -42,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/h2-console/**"
                         ,"/favicon.ico"
                         ,"/error"
+                        ,"/logout"
                 );
     }
 
@@ -58,8 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/users/**").authenticated()
-                .anyRequest().permitAll()
+                .antMatchers("/home", "/login", "/signup", "/user/nickname", "/user/password/recover", "/email").permitAll()
+                .anyRequest().authenticated()
                 .and()
 
                 .apply(new JwtSecurityConfig(tokenProvider));
