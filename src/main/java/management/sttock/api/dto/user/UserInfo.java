@@ -10,8 +10,9 @@ import javax.validation.constraints.Pattern;
 @Getter
 @AllArgsConstructor
 public class UserInfo {
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "닉네임은 영어와 숫자로만 구성되어야 합니다.")
-    private String nickname;
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "아이디는 영어와 숫자로만 구성되어야 합니다.")
+    @JsonProperty("login_id")
+    private String loginId;
     @NotBlank
     private String name;
     @JsonProperty("gender_cd")

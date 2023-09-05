@@ -37,14 +37,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public CookieResponse login(LoginRequest request) {
         try {
-
-            Optional<User> user = authRespository.findByNickname(request.getNickname());
+            Optional<User> user = authRespository.findByLoginId(request.getLoginId());
             boolean isNotMatchPassword = !passwordEncoder.matches(request.getPassword(), user.get().getPassword());
 
             if (isNotMatchPassword) {
                 throw new ValidateException(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다.");
             }
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getNickname());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getLoginId());
             String token = tokenProvider.createToken(userDetails);
             RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), userDetails);
 
@@ -105,5 +104,4 @@ public class AuthServiceImpl implements AuthService {
         cookie.setPath("/");
         return cookie;
     }
-
 }

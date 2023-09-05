@@ -1,5 +1,6 @@
 package management.sttock.api.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
@@ -42,16 +43,16 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
 
-    @PostMapping("/user/nickname")
-    public ResponseEntity<Map<String, String>> findNickname(@RequestParam String email){
-        String nickname = userService.findNickname(email);
-        return ResponseEntity.status(200).body(setResponseMesssage("nickname", nickname));
+    @PostMapping("/user/loginId")
+    public ResponseEntity<Map<String, String>> findloginId(@RequestParam String email){
+        String loginId = userService.findloginId(email);
+        return ResponseEntity.status(200).body(setResponseMesssage("loginId", loginId));
     }
 
     @PostMapping("/user/password/recover")
     public ResponseEntity<Map<String, String>> findPassword(@RequestParam String email,
-                                               @RequestParam String nickname){
-        userService.updateTempPassword(email, nickname);
+                                               @RequestParam("login_id") String loginId){
+        userService.updateTempPassword(email, loginId);
         return ResponseEntity.status(200).body(setResponseMesssage("message","입력하신 이메일로 임시 비밀번호가 전송되었습니다"));
     }
 

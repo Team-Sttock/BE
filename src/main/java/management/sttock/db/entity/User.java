@@ -18,7 +18,8 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    private String nickname; //사용자 입력 id
+    @Column(name = "login_id")
+    private String loginId; //사용자 입력 id
 
     private String password;
 
@@ -36,10 +37,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<RefreshToken> refreshTokens = new ArrayList<>();
 
-    public User(Long id, String nickname, String password, String name,
+    public User(Long id, String loginId, String password, String name,
                 int genderCd, String email, int familyNum, Date birthday) {
         this.id = id;
-        this.nickname = nickname;
+        this.loginId = loginId;
         this.password = password;
         this.name = name;
         this.genderCd = genderCd;
@@ -49,7 +50,7 @@ public class User {
     }
 
     public void updateUser(final UserInfo request, Date birthday){
-        this.nickname = request.getNickname();
+        this.loginId = request.getLoginId();
         this.name = request.getName();
         this.genderCd = request.getGenderCd();
         this.email = request.getEmail();
