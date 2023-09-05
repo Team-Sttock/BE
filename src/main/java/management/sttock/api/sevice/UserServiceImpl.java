@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(SignupRequest request) {
-        validateNickname(request.getNickname());
+        validateloginId(request.getLoginId());
         validateEmail(request.getEmail());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             User user = User.builder()
-                    .nickname(request.getNickname())
+                    .loginId(request.getLoginId())
                     .password(request.getPassword())
                     .name(request.getName())
                     .genderCd(request.getGenderCd())
@@ -61,9 +61,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String findNickname(String email) {
+    public String findloginId(String email) {
         try {
-            return userRepository.findByEmail(email).get().getNickname();
+            return userRepository.findByEmail(email).get().getLoginId();
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
@@ -72,19 +72,19 @@ public class UserServiceImpl implements UserService {
         return null;
     }
     @Override
-    public void updateTempPassword(String email, String nickname) {
-        boolean isNotFoundUser = !findNickname(email).equals(nickname);
+    public void updateTempPassword(String email, String loginId) {
+        boolean isNotFoundUser = !findloginId(email).equals(loginId);
         if (isNotFoundUser) {
             throw new ValidateException(HttpStatus.NOT_FOUND, "일치하는 회원이 없습니다.");
         }
         String tempPassword = mailSendService.sendTempPassword(email);
-        updatePassword(tempPassword, nickname);
+        updatePassword(tempPassword, loginId);
     }
 
     @Override
-    public void validateNickname(String nickname) {
-        boolean duplicateNickname = !userRepository.findByNickname(nickname).isEmpty();
-        if(duplicateNickname){
+    public void validateloginId(String loginId) {
+        boolean duplicateloginId = !userRepository.findByLoginId(loginId).isEmpty();
+        if(duplicateloginId){
             throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다.");
         }
     }
@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfo getUserInfo(HttpServletRequest request, Authentication authentication) {
         try {
-            User user = userRepository.findByNickname(authentication.getName()).get();
-            return new UserInfo(user.getNickname(), user.getName(),
+            User user = userRepository.findByLoginId(authentication.getName()).get();
+            return new UserInfo(user.getLoginId(), user.getName(),
                     user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
@@ -114,16 +114,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        boolean isUserEmpty = userRepository.findByNickname(authentication.getName()).isEmpty();
+        boolean isUserEmpty = userRepository.findByLoginId(authentication.getName()).isEmpty();
 
         if(isUserEmpty) throw new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
 
-        User user = userRepository.findByNickname(authentication.getName()).get();
-        boolean updateUserNickname = !user.getNickname().equals(requestDto.getNickname());
+        User user = userRepository.findByLoginId(authentication.getName()).get();
+        boolean updateUserloginId = !user.getLoginId().equals(requestDto.getLoginId());
         boolean updateUserEmail = !user.getEmail().equals(requestDto.getEmail());
 
-        if(updateUserNickname){
-            validateNickname(requestDto.getNickname());
+        if(updateUserloginId){
+            validateloginId(requestDto.getLoginId());
         }
         if(updateUserEmail){
             validateEmail(requestDto.getEmail());
@@ -147,8 +147,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void updatePassword(String password, String nickname) {
-        User user = userRepository.findByNickname(nickname).get();
+    private void updatePassword(String password, String loginId) {
+        User user = userRepository.findByLoginId(loginId).get();
         user.updatePassword(password);
         userRepository.save(user);
     }
@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void withdrawUser(HttpServletRequest request, Authentication authentication) {
-        Optional<User> user = userRepository.findByNickname(authentication.getName());
+        Optional<User> user = userRepository.findByLoginId(authentication.getName());
         boolean isAuthenticated = user.isEmpty();
         if(isAuthenticated){
             throw new ValidateException(HttpStatus.UNAUTHORIZED, "로그인 후 이용가능 합니다.");
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void userMe(HttpServletRequest request, Authentication authentication) {
         try {
-            userRepository.findByNickname(authentication.getName());
+            userRepository.findByLoginId(authentication.getName());
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
