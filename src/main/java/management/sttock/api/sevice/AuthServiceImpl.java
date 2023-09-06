@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
             boolean isNotMatchPassword = !passwordEncoder.matches(request.getPassword(), user.get().getPassword());
 
             if (isNotMatchPassword) {
-                throw new ValidateException(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다.");
+                throw new NoSuchElementException();
             }
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getLoginId());
             String token = tokenProvider.createToken(userDetails);
@@ -51,10 +51,8 @@ public class AuthServiceImpl implements AuthService {
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
             Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
-        } catch (ValidateException e) {
-            throw e;
         } catch (NoSuchElementException e) {
-            throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디를 잘못 입력했습니다.");
+            throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력했습니다.");
         } catch (Exception e) {
             throw new ServerException("일시적인 오류로 로그인할 수 없습니다. 잠시 후 다시 시도해주세요.");
         }
