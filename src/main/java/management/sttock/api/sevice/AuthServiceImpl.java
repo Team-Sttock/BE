@@ -51,6 +51,8 @@ public class AuthServiceImpl implements AuthService {
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
             Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
+        } catch (ValidateException e) {
+            throw e;
         } catch (NoSuchElementException e) {
             throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디를 잘못 입력했습니다.");
         } catch (Exception e) {

@@ -1,6 +1,5 @@
 package management.sttock.api.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
