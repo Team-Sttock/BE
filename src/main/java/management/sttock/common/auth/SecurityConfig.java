@@ -1,9 +1,6 @@
 package management.sttock.common.auth;
 
-import management.sttock.common.auth.local.JwtAccessDeniedHandler;
-import management.sttock.common.auth.local.JwtAuthenticationEntryPoint;
-import management.sttock.common.auth.local.JwtSecurityConfig;
-import management.sttock.common.auth.local.TokenProvider;
+import management.sttock.common.auth.local.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         ,"/favicon.ico"
                         ,"/error"
                         ,"/logout"
+                        ,"/home","/login", "/signup", "/user/loginId", "/user/password/recover", "/email"
                 );
     }
 
@@ -61,6 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/home", "/login", "/signup", "/user/loginId", "/user/password/recover", "/email").permitAll()
                 .anyRequest().authenticated()
+                .and()
+
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/home")
                 .and()
 
                 .apply(new JwtSecurityConfig(tokenProvider));
