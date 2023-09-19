@@ -9,7 +9,18 @@ server:
 
 spring:
   profiles:
-    active: local
+    group:
+      "local": "local, oauth"
+      "dev": "oauth"
+    default: local
+
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template: true
+    suffix: .html
+    mode: HTML5
+    cache: false
+
 
   jpa:
     hibernate:
