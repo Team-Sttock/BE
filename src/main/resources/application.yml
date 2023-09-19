@@ -28,7 +28,7 @@ spring:
           auth: true
           timeout: 50000
           starttls.enable: true
-        debug=: true
+        debug: true
   redis:
     host: localhost
     port: 6379
