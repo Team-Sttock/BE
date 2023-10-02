@@ -43,15 +43,16 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Bean
-    public WebSecurityCustomizer configure() {
-        return (web) -> web.ignoring().antMatchers(PERMIT_ALL_REQUESTS);
-    }
+//    @Bean
+//    public WebSecurityCustomizer configure() {
+//        return (web) -> web.ignoring().antMatchers(PERMIT_ALL_REQUESTS);
+//    }
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable()
+                .formLogin().disable()
                 .cors().and()
                 .csrf().disable()
                 .exceptionHandling()

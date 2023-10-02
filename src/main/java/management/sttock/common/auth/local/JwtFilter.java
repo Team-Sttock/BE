@@ -19,15 +19,32 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
+
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+    public static final String[] PERMIT_ALL_REQUESTS = {
+            "/h2-console/**"
+            ,"/favicon.ico"
+            ,"/error"
+            ,"/logout"
+            ,"/home", "/signup", "/login", "/user/loginId", "/user/password/recover", "/email"
+            , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
+            , "/oauth2/**", "/", "/oauth2/*"
+    };
     private final TokenProvider tokenProvider;
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
+
+        logger.info("do Filter");
+
+        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(path::startsWith)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
