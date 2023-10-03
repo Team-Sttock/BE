@@ -41,10 +41,6 @@ public class JwtFilter extends GenericFilterBean {
 
         logger.info("do Filter");
 
-        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(path::startsWith)) {
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
@@ -56,6 +52,12 @@ public class JwtFilter extends GenericFilterBean {
         } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
+
+        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(path::startsWith)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
