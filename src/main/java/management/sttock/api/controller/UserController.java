@@ -5,6 +5,7 @@ import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 import management.sttock.api.sevice.UserServiceImpl;
+import management.sttock.common.define.ApiPath;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@RequestMapping("")
+@RequestMapping(ApiPath.V1_USER)
 @RequiredArgsConstructor
 public class UserController {
     private final PasswordEncoder passwordEncoder;
@@ -35,32 +36,32 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("message", "이메일 인증을 성공했습니다."));
     }
 
-    @PostMapping("/signup")
+    @PostMapping(ApiPath.SIGN_UP)
     public ResponseEntity<Map<String, String>> signup(@Valid @RequestBody SignupRequest request){
         request.changeEncodePassword(passwordEncoder.encode(request.getPassword()));
         userService.register(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
 
-    @PostMapping("/user/loginId")
+    @PostMapping("/loginId")
     public ResponseEntity<Map<String, String>> findloginId(@RequestParam String email){
         String loginId = userService.findloginId(email);
         return ResponseEntity.status(200).body(setResponseMesssage("loginId", loginId));
     }
 
-    @PostMapping("/user/password/recover")
+    @PostMapping("/password/recover")
     public ResponseEntity<Map<String, String>> findPassword(@RequestParam String email,
                                                @RequestParam("login_id") String loginId){
         userService.updateTempPassword(email, loginId);
         return ResponseEntity.status(200).body(setResponseMesssage("message","입력하신 이메일로 임시 비밀번호가 전송되었습니다"));
     }
 
-    @GetMapping("/user")
+    @GetMapping
     public ResponseEntity<UserInfo> getUserInfo(HttpServletRequest request, Authentication authentication){
         UserInfo response = userService.getUserInfo(request, authentication);
         return ResponseEntity.status(200).body(response);
     }
-    @PatchMapping("/user")
+    @PatchMapping
     public ResponseEntity<Map<String, String>> updateUserInfo(@Valid @RequestBody UserInfo requestDto, HttpServletRequest request,
                                                               Authentication authentication){
         userService.updateUserInfo(requestDto, request, authentication);
@@ -75,7 +76,7 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("message", "비밀번호를 성공적으로 변경했습니다."));
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping
     public ResponseEntity<Map<String, String>> withdrawUser(HttpServletRequest request, Authentication authentication){
         userService.withdrawUser(request, authentication);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "회원 탈퇴하였습니다."));

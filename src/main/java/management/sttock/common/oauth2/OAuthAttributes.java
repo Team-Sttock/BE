@@ -9,17 +9,19 @@ import management.sttock.db.entity.Role;
 import management.sttock.db.entity.User;
 import management.sttock.db.entity.enums.SocialType;
 
+
 import java.util.Map;
 
 /**
  * 각 소셜에서 받아오는 데이터가 다르므로
- * 소셜별로 데이터를 받는 데이터를 분기 처리하는 DTO 클래스
+ * 소셜별로 데이터를 분기 처리하는 DTO 클래스
  */
 @Getter
 public class OAuthAttributes {
 
     private String nameAttributeKey; // OAuth2 로그인 진행 시 키가 되는 필드 값, PK와 같은 의미
     private OAuth2UserInfo oauth2UserInfo; // 소셜 타입별 로그인 유저 정보(닉네임, 이메일, 프로필 사진 등등)
+
 
     @Builder
     public OAuthAttributes(String nameAttributeKey, OAuth2UserInfo oauth2UserInfo) {
@@ -36,15 +38,18 @@ public class OAuthAttributes {
     public static OAuthAttributes of(SocialType socialType,
                                      String userNameAttributeName, Map<String, Object> attributes) {
 
-        OAuthAttributes oAuthAttributes = null;
-
+        OAuthAttributes oAuthAttributes;
         switch (socialType) {
-            case NAVER : oAuthAttributes = ofNaver(userNameAttributeName, attributes);
-            default : oAuthAttributes = ofKakao(userNameAttributeName, attributes);
+            case NAVER:
+                oAuthAttributes = ofNaver(userNameAttributeName, attributes);
+                break;
+            default:
+                oAuthAttributes = ofKakao(userNameAttributeName, attributes);
+                break;
         }
-
         return oAuthAttributes;
     }
+
 
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
@@ -66,14 +71,14 @@ public class OAuthAttributes {
      * OAuth2UserInfo에서 socialId(식별값), nickname, imageUrl을 가져와서 build
      * role은 GUEST로 설정
      */
-    public User toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
+    public User toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo, Role role) {
         return User.builder()
                 .socialType(socialType)
                 .socialId(oauth2UserInfo.getId())
                 .email(oauth2UserInfo.getEmail())
-                .loginId(oauth2UserInfo.getNickname())
+                .loginId(oauth2UserInfo.getEmail())
                 .name(oauth2UserInfo.getNickname())
-                .role(new Role(2)) // 관리자
+                .role(role) // 관리자
                 .build();
     }
 }

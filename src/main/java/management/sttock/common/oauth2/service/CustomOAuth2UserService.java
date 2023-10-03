@@ -6,6 +6,7 @@ import management.sttock.common.oauth2.CustomOAuth2User;
 import management.sttock.common.oauth2.OAuthAttributes;
 import management.sttock.db.entity.User;
 import management.sttock.db.entity.enums.SocialType;
+import management.sttock.db.repository.RoleRepository;
 import management.sttock.db.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     private static final String NAVER = "naver";
     private static final String KAKAO = "kakao";
@@ -96,7 +98,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
      * 생성된 User 객체를 DB에 저장 : socialType, socialId, email, role 값만 있는 상태
      */
     private User saveUser(OAuthAttributes attributes, SocialType socialType) {
-        User createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo());
+        User createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo(), roleRepository.findByCode(1));
         return userRepository.save(createdUser);
     }
 }
