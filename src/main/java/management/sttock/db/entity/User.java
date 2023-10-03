@@ -2,6 +2,8 @@ package management.sttock.db.entity;
 
 import lombok.*;
 import management.sttock.api.dto.user.UserInfo;
+import management.sttock.db.entity.enums.SocialType;
+import management.sttock.db.entity.Role;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,7 +34,16 @@ public class User {
     @Column(name = "family_num")
     private int familyNum;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     private Date birthday;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
 
     @OneToMany(mappedBy = "user")
     private List<RefreshToken> refreshTokens = new ArrayList<>();

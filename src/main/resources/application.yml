@@ -9,7 +9,18 @@ server:
 
 spring:
   profiles:
-    active: local
+    group:
+      "local": "local, oauth"
+      "dev": "oauth"
+    default: local
+
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template: true
+    suffix: .html
+    mode: HTML5
+    cache: false
+
 
   jpa:
     hibernate:
@@ -28,7 +39,7 @@ spring:
           auth: true
           timeout: 50000
           starttls.enable: true
-        debug=: true
+        debug: true
   redis:
     host: localhost
     port: 6379

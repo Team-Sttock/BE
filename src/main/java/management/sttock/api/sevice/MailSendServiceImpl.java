@@ -96,7 +96,7 @@ public class MailSendServiceImpl implements MailSendService {
                 "<br><br>" +
                 "인증번호는 " + checkNumber + " 입니다." +
                 "<br><br>" +
-                "해당 인증번호를 인증번호 확인한에 기입하여 주시기 바랍니다.";
+                "해당 인증번호를 인증번호 확인란에 기입하여 주시기 바랍니다.";
         sendEmailForAuth(title, email, content);
     }
 
