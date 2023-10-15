@@ -4,18 +4,18 @@ spring:
       client:
         registration:
           naver:
-            client-id: test
-            client-secret: test
-            redirect-uri: http://localhost:8080/login/oauth2/naver
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            redirect-uri: https://sttock.co.kr/api/v1/login/oauth2/naver
             authorization-grant-type: authorization_code
             scope:
               - name
               - email
             client-name: Naver
           kakao:
-            client-id: test
-            client-secret: test
-            redirect-uri: http://localhost:8080/login/oauth2/kakao
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: https://sttock.co.kr/api/v1/login/oauth2/kakao
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope:

@@ -11,8 +11,8 @@ spring:
   profiles:
     group:
       "local": "local, oauth"
-      "dev": "oauth"
-    default: local
+      "dev": "dev, oauth"
+    default: dev
 
   thymeleaf:
     prefix: classpath:templates/
