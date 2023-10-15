@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler)
                 .redirectionEndpoint()
-                .baseUri("/login/oauth2/*")
+                .baseUri("/api/v1/login/oauth2/*")
                 .and()
                 .userInfoEndpoint().userService(customOAuth2UserService);
 
