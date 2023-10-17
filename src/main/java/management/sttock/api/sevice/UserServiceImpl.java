@@ -82,6 +82,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void checkLoginId(String loginId) {
+        validateloginId(loginId);
+    }
+
+    @Override
     public void validateloginId(String loginId) {
         boolean duplicateloginId = !userRepository.findByLoginId(loginId).isEmpty();
         if(duplicateloginId){

@@ -42,6 +42,11 @@ public class UserController {
         userService.register(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
+    @GetMapping("/check")
+    public ResponseEntity<Map<String, String>> checkLoginId(@RequestParam String login_Id){
+        userService.checkLoginId(login_Id);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "사용 가능한 아이디 입니다."));
+    }
 
     @PostMapping("/loginId")
     public ResponseEntity<Map<String, String>> findloginId(@RequestParam String email){
