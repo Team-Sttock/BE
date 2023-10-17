@@ -19,4 +19,5 @@ public interface UserService {
     void updatePassword(String password, HttpServletRequest request, Authentication authentication);
     void userMe(HttpServletRequest request, Authentication authentication);
     void updateTempPassword(String email, String loginId);
+    void checkLoginId(String loginId);
 }

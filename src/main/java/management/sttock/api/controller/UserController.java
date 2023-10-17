@@ -24,11 +24,11 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserServiceImpl userService;
 
-    @GetMapping("/email")
+    @PostMapping("/verification-code")
     public ResponseEntity<Map<String, String>> sendAuthNumber(@Valid @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$",
             message = "이메일을 입력해주세요") @RequestParam String email){
         userService.sendAuthNumber(email);
-        return ResponseEntity.status(201).body(setResponseMesssage("message", "인증번호를 보냈습니다."));
+        return ResponseEntity.status(201).body(setResponseMesssage("message", "입력하신 이메일로 인증번호가 전송되었습니다."));
     }
     @PostMapping("/email")
     public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam int authNumber){
@@ -42,6 +42,11 @@ public class UserController {
         userService.register(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
+    @GetMapping("/check")
+    public ResponseEntity<Map<String, String>> checkLoginId(@RequestParam String login_Id){
+        userService.checkLoginId(login_Id);
+        return ResponseEntity.status(200).body(setResponseMesssage("message", "사용 가능한 아이디 입니다."));
+    }
 
     @PostMapping("/loginId")
     public ResponseEntity<Map<String, String>> findloginId(@RequestParam String email){
@@ -49,7 +54,7 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("loginId", loginId));
     }
 
-    @PostMapping("/password/recover")
+    @PostMapping("/temp-password")
     public ResponseEntity<Map<String, String>> findPassword(@RequestParam String email,
                                                @RequestParam("login_id") String loginId){
         userService.updateTempPassword(email, loginId);
