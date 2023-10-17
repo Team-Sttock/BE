@@ -24,11 +24,11 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserServiceImpl userService;
 
-    @GetMapping("/email")
+    @PostMapping("/verification-code")
     public ResponseEntity<Map<String, String>> sendAuthNumber(@Valid @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$",
             message = "이메일을 입력해주세요") @RequestParam String email){
         userService.sendAuthNumber(email);
-        return ResponseEntity.status(201).body(setResponseMesssage("message", "인증번호를 보냈습니다."));
+        return ResponseEntity.status(201).body(setResponseMesssage("message", "입력하신 이메일로 인증번호가 전송되었습니다."));
     }
     @PostMapping("/email")
     public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam int authNumber){
