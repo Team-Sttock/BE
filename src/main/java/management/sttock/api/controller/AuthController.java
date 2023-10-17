@@ -30,7 +30,7 @@ public class AuthController {
         return ResponseEntity.status(200).body(setResponseMesssage("message","로그인에 성공했습니다."));
     }
 
-    @RequestMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletRequest request){
         authService.logout(request);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "로그아웃에 성공했습니다."));
