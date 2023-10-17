@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("loginId", loginId));
     }
 
-    @PostMapping("/password/recover")
+    @PostMapping("/temp-password")
     public ResponseEntity<Map<String, String>> findPassword(@RequestParam String email,
                                                @RequestParam("login_id") String loginId){
         userService.updateTempPassword(email, loginId);
