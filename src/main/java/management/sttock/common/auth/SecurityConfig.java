@@ -57,6 +57,10 @@ public class SecurityConfig {
                 .and()
                 .userInfoEndpoint().userService(customOAuth2UserService);
 
+        http.logout()
+                .logoutSuccessUrl("/")
+                .deleteCookies("accessToken", "refreshToken");
+
         return http.build();
     }
 }
