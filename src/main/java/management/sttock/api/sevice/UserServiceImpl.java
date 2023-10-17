@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "아이디 찾기에 실패했습니다.");
         }
         return null;
     }
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     public void validateloginId(String loginId) {
         boolean duplicateloginId = !userRepository.findByLoginId(loginId).isEmpty();
         if(duplicateloginId){
-            throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다.");
+            throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 아이디입니다.");
         }
     }
 
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
         } catch (NoSuchElementException e) {
             new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "닉네임 찾기에 실패했습니다.");
+            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "아이디 찾기에 실패했습니다.");
         }
         return null;
     }
