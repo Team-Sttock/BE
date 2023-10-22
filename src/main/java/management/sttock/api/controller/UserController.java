@@ -1,7 +1,5 @@
 package management.sttock.api.controller;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
@@ -26,13 +24,13 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserServiceImpl userService;
 
-    @PostMapping("/verification-code")
+    @PostMapping("/email/verification-code")
     public ResponseEntity<Map<String, String>> sendAuthNumber(@Valid @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$",
             message = "이메일을 입력해주세요") @RequestParam String email){
         userService.sendAuthNumber(email);
         return ResponseEntity.status(201).body(setResponseMesssage("message", "입력하신 이메일로 인증번호가 전송되었습니다."));
     }
-    @PostMapping("/email")
+    @PostMapping("/email/check-verification-code")
     public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam("auth_number") int authNumber){
         userService.checkAuthNumber(email, authNumber);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "이메일 인증을 성공했습니다."));
