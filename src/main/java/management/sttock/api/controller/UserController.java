@@ -1,5 +1,7 @@
 package management.sttock.api.controller;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
@@ -31,7 +33,7 @@ public class UserController {
         return ResponseEntity.status(201).body(setResponseMesssage("message", "입력하신 이메일로 인증번호가 전송되었습니다."));
     }
     @PostMapping("/email")
-    public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam int authNumber){
+    public ResponseEntity<Map<String, String>> checkAuthNumber(@RequestParam String email, @RequestParam("auth_number") int authNumber){
         userService.checkAuthNumber(email, authNumber);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "이메일 인증을 성공했습니다."));
     }
@@ -43,8 +45,8 @@ public class UserController {
         return ResponseEntity.status(200).body(setResponseMesssage("message","회원가입에 성공했습니다."));
     }
     @GetMapping("/check")
-    public ResponseEntity<Map<String, String>> checkLoginId(@RequestParam String login_Id){
-        userService.checkLoginId(login_Id);
+    public ResponseEntity<Map<String, String>> checkLoginId(@RequestParam("login_id") String loginId){
+        userService.checkLoginId(loginId);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "사용 가능한 아이디 입니다."));
     }
 
