@@ -1,10 +1,6 @@
 package management.sttock.support.error;
 
 import lombok.extern.slf4j.Slf4j;
-import management.sttock.support.error.common.CommonApiException;
-import management.sttock.support.error.common.CommonErrorType;
-import management.sttock.support.error.product.ProductApiException;
-import management.sttock.support.error.user.UserApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,24 +18,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("MethodArgumentNotValidException: {}", ex);
-        return ResponseEntity.badRequest().body(response.updateErrorResponse(CommonErrorType.BAD_REQUEST_DATA));
+        return ResponseEntity.badRequest().body(response.updateErrorResponse(ErrorType.BAD_REQUEST_DATA));
     }
 
-    @ExceptionHandler(CommonApiException.class)
-    public ResponseEntity<Object> handleCommonApiException(CommonApiException ex) {
-        log.error("CommonApiException: {}", ex);
-        return ResponseEntity.status(ex.getErrorType().getStatus()).body(response.updateErrorResponse(ex.getErrorType()));
-    }
-
-    @ExceptionHandler(ProductApiException.class)
-    public ResponseEntity<Object> handleProductApiException(ProductApiException ex) {
-        log.error("ProductApiException: {}", ex);
-        return ResponseEntity.status(ex.getErrorType().getStatus()).body(response.updateErrorResponse(ex.getErrorType()));
-    }
-
-    @ExceptionHandler(UserApiException.class)
-    public ResponseEntity<Object> handleProductApiException(UserApiException ex) {
-        log.error("UserApiException: {}", ex);
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Object> handleCommonApiException(ApiException ex) {
+        log.error("ApiException: {}", ex);
         return ResponseEntity.status(ex.getErrorType().getStatus()).body(response.updateErrorResponse(ex.getErrorType()));
     }
 }
