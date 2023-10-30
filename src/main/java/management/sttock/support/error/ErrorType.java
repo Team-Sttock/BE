@@ -1,7 +1,6 @@
 package management.sttock.support.error;
 
 import lombok.Getter;
-import management.sttock.support.error.ErrorCode;
 import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorType {
@@ -29,6 +28,11 @@ public enum ErrorType {
             HttpStatus.UNAUTHORIZED,
             ErrorCode.E401004,
             ErrorCode.E401004.getErrorMessage()
+    ),
+    UNAUTHENTICATED_STATUS(
+      HttpStatus.UNAUTHORIZED,
+      ErrorCode.E401005,
+      ErrorCode.E401005.getErrorMessage()
     ),
     FORBIDDEN(
             HttpStatus.FORBIDDEN,
