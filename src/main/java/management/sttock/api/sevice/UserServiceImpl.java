@@ -3,6 +3,7 @@ package management.sttock.api.sevice;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
+import management.sttock.common.exception.CommonException;
 import management.sttock.common.exception.ValidateException;
 
 import management.sttock.db.entity.User;
@@ -89,6 +90,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void validateloginId(String loginId) {
         boolean duplicateloginId = !userRepository.findByLoginId(loginId).isEmpty();
+        if (loginId.isBlank()) {
+            throw new ValidateException(HttpStatus.BAD_REQUEST, "아이디가 없습니다.");
+        }
         if(duplicateloginId){
             throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 아이디입니다.");
         }
