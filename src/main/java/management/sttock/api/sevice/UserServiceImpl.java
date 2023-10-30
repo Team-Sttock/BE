@@ -1,15 +1,15 @@
 package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
-import management.sttock.common.exception.CommonException;
-import management.sttock.common.exception.ValidateException;
 
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.RefreshTokenRepository;
 import management.sttock.db.repository.UserRepository;
-import org.springframework.http.HttpStatus;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(user);
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입에 실패했습니다.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -66,9 +66,9 @@ public class UserServiceImpl implements UserService {
         try {
             return userRepository.findByEmail(email).get().getLoginId();
         } catch (NoSuchElementException e) {
-            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "아이디 찾기에 실패했습니다.");
+            new ApiException(ErrorType.SERVER_ERROR);
         }
         return null;
     }
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     public void updateTempPassword(String email, String loginId) {
         boolean isNotFoundUser = !findloginId(email).equals(loginId);
         if (isNotFoundUser) {
-            throw new ValidateException(HttpStatus.NOT_FOUND, "일치하는 회원이 없습니다.");
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
         }
         String tempPassword = mailSendService.sendTempPassword(email);
         updatePassword(tempPassword, loginId);
@@ -91,10 +91,10 @@ public class UserServiceImpl implements UserService {
     public void validateloginId(String loginId) {
         boolean duplicateloginId = !userRepository.findByLoginId(loginId).isEmpty();
         if (loginId.isBlank()) {
-            throw new ValidateException(HttpStatus.BAD_REQUEST, "아이디가 없습니다.");
+            throw new ApiException(ErrorType.BAD_REQUEST_DATA);
         }
         if(duplicateloginId){
-            throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 아이디입니다.");
+            throw new ApiException(ErrorType.LOGINID_CONFLICT);
         }
     }
 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
     public void validateEmail(String email) {
         boolean duplicateEmail = !userRepository.findByEmail(email).isEmpty();
         if(duplicateEmail){
-            throw new ValidateException(HttpStatus.CONFLICT, "이미 사용중인 이메일입니다.");
+            throw new ApiException(ErrorType.EMAIL_CONFLICT);
         }
     }
 
@@ -113,11 +113,10 @@ public class UserServiceImpl implements UserService {
             return new UserInfo(user.getLoginId(), user.getName(),
                     user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
         } catch (NoSuchElementException e) {
-            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "아이디 찾기에 실패했습니다.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
-        return null;
     }
 
     @Override
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         boolean isUserEmpty = userRepository.findByLoginId(authentication.getName()).isEmpty();
 
-        if(isUserEmpty) throw new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+        if(isUserEmpty) throw new ApiException(ErrorType.USER_NOT_FOUND);
 
         User user = userRepository.findByLoginId(authentication.getName()).get();
         boolean updateUserloginId = !user.getLoginId().equals(requestDto.getLoginId());
@@ -141,7 +140,7 @@ public class UserServiceImpl implements UserService {
             user.updateUser(requestDto, format.parse(requestDto.getBirthday()));
             userRepository.save(user);
         } catch (Exception e) {
-            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 정보 수정에 실패했습니다.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -150,9 +149,9 @@ public class UserServiceImpl implements UserService {
         try {
             updatePassword(password, authentication.getName());
         } catch (NoSuchElementException e) {
-            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 변경에 실패했습니다.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -168,13 +167,13 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findByLoginId(authentication.getName());
         boolean isAuthenticated = user.isEmpty();
         if(isAuthenticated){
-            throw new ValidateException(HttpStatus.UNAUTHORIZED, "로그인 후 이용가능 합니다.");
+            throw new ApiException(ErrorType.UNAUTHENTICATED_STATUS);
         }
         try {
             refreshTokenRepository.deleteAllByUser(user.get());
             userRepository.delete(user.get());
         } catch (Exception e) {
-            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴에 실패했습니다.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -183,9 +182,9 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.findByLoginId(authentication.getName());
         } catch (NoSuchElementException e) {
-            new ValidateException(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
-            new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 }

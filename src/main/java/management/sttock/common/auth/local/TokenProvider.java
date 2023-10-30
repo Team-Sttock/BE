@@ -3,10 +3,11 @@ package management.sttock.common.auth.local;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import management.sttock.common.exception.TokenRefreshException;
 import management.sttock.db.entity.RefreshToken;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.RefreshTokenRepository;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -163,14 +164,14 @@ public class TokenProvider implements InitializingBean {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken.getToken());
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw new TokenRefreshException("유효하지 않은 RefreshToken 입니다.");
+            throw new ApiException(ErrorType.INVALID_REFRESHTOKEN);
         }
     }
 
     private boolean checkExpirationDate(RefreshToken refreshToken) {
         if(refreshToken.getExpiredDt().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new TokenRefreshException("RefreshToken 이 만료되었습니다. 다시 로그인해 주십시오");
+            throw new ApiException(ErrorType.EXPIRED_REFRESHTOKEN);
         }
         return true;
     }
@@ -179,7 +180,7 @@ public class TokenProvider implements InitializingBean {
         List<RefreshToken> findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken());
 
         if(findRefreshToken.isEmpty()) {
-            throw new TokenRefreshException("존재하지 않는 RefreshToken 입니다.");
+            throw new ApiException(ErrorType.INVALID_REFRESHTOKEN);
         }
         return true;
     }
@@ -188,7 +189,7 @@ public class TokenProvider implements InitializingBean {
         RefreshToken findRefreshToken = refreshTokenRepository.findByTokenOrderByExpiredDtDesc(refreshToken.getToken()).get(0);
         boolean isNotEqual = !refreshToken.getUser().equals(findRefreshToken.getUser());
         if (isNotEqual) {
-            throw new TokenRefreshException("소유자가 일치하지 않습니다.");
+            throw new ApiException(ErrorType.INVALID_REFRESHTOKEN);
         }
         return true;
     }

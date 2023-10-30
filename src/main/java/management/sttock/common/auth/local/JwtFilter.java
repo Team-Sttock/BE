@@ -1,10 +1,10 @@
 package management.sttock.common.auth.local;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.common.exception.ValidateException;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -67,6 +67,6 @@ public class JwtFilter extends GenericFilterBean {
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "accessToken".equals(cookie.getName()))
                 .map(Cookie::getValue)
-                .findFirst().orElseThrow(() -> new ValidateException(HttpStatus.BAD_REQUEST, "세션이 만료되었거나 유효하지 않습니다."));
+                .findFirst().orElseThrow(() -> new ApiException(ErrorType.INVALID_ACCESSTOKEN));
     }
 }

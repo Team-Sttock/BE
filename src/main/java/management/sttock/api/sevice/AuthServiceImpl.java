@@ -5,13 +5,12 @@ import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
-import management.sttock.common.exception.ServerException;
-import management.sttock.common.exception.ValidateException;
 import management.sttock.db.entity.RefreshToken;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.AuthRespository;
 import management.sttock.db.repository.RefreshTokenRepository;
-import org.springframework.http.HttpStatus;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,8 @@ public class AuthServiceImpl implements AuthService {
     public CookieResponse login(LoginRequest request) {
         try {
             Optional<User> user = authRespository.findByLoginId(request.getLoginId());
-            boolean isNotMatchPassword = !passwordEncoder.matches(request.getPassword(), user.get().getPassword());
+            boolean isNotMatchPassword = !passwordEncoder.matches(request.getPassword(),
+                    user.get().getPassword());
 
             if (isNotMatchPassword) {
                 throw new NoSuchElementException();
@@ -51,10 +51,11 @@ public class AuthServiceImpl implements AuthService {
             Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
             Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
+
         } catch (NoSuchElementException e) {
-            throw new ValidateException(HttpStatus.UNAUTHORIZED, "등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력했습니다.");
+            throw new ApiException(ErrorType.LOGIN_FAILED);
         } catch (Exception e) {
-            throw new ServerException("일시적인 오류로 로그인할 수 없습니다. 잠시 후 다시 시도해주세요.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -65,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
             RefreshToken refreshToken = getRefreshToken(request);
             refreshTokenRepository.delete(refreshToken);
         } catch (Exception e) {
-            throw new ValidateException(HttpStatus.INTERNAL_SERVER_ERROR, "로그아웃에 실패했습니다. 다시 시도해 주세요.");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -94,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "refreshToken".equals(cookie.getName()))
                 .map(Cookie::getValue)
-                .findFirst().orElseThrow(() -> new ValidateException(HttpStatus.BAD_REQUEST, "세션이 만료되었거나 유효하지 않습니다."));
+                .findFirst().orElseThrow(() -> new ApiException(ErrorType.INVALID_REFRESHTOKEN));
     }
 
     private Cookie setTokenInCookie(String tokenName, String token) {
