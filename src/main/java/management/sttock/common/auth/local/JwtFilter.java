@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
-
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
@@ -30,9 +28,9 @@ public class JwtFilter extends GenericFilterBean {
             ,"/favicon.ico"
             ,"/error"
             ,"/logout"
-            ,"/home", "/signup", "/login", "/user/loginId", "/user/password/recover", "/email"
+            ,"/home", "/signup", "/api/v1/auth/login", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
             , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
-            , "/oauth2/**", "/", "/oauth2/*"
+            , "/oauth2/**", "/oauth2/*"
     };
     private final TokenProvider tokenProvider;
     @Override
@@ -44,7 +42,7 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(path::startsWith)) {
+        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(requestURI::startsWith)) {
             logger.info("permit: " + requestURI);
             filterChain.doFilter(servletRequest, servletResponse);
             return;
