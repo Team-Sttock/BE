@@ -1,10 +1,15 @@
 package management.sttock.common.auth.local;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorResponse;
 import management.sttock.support.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -26,7 +31,7 @@ public class JwtFilter extends GenericFilterBean {
     public static final String[] PERMIT_ALL_REQUESTS = {
             "/h2-console/**"
             ,"/favicon.ico"
-            ,"/error"
+//            ,"/error"
             ,"/logout"
             ,"/home", "/signup", "/api/v1/auth/login", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
             , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
@@ -40,7 +45,20 @@ public class JwtFilter extends GenericFilterBean {
         logger.info("do Filter");
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String requestURI = httpServletRequest.getRequestURI();
+
+        if (requestURI.equals("/error")) {
+            logger.error("/error!!!");
+
+            ApiException apiException = new ApiException(ErrorType.UNAUTHENTICATED_STATUS);
+            HashMap<String, Object> response = new ErrorResponse().updateErrorResponse(apiException.getErrorType());
+
+            httpServletResponse.setStatus(apiException.getErrorType().getStatus().value());
+            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            httpServletResponse.setCharacterEncoding("UTF-8");
+            httpServletResponse.getWriter().write(new ObjectMapper().writeValueAsString(response));
+        }
 
         if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(requestURI::startsWith)) {
             logger.info("permit: " + requestURI);
