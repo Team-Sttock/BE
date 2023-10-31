@@ -1,10 +1,11 @@
 package management.sttock.common.auth.local;
 
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import management.sttock.common.exception.ValidateException;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -19,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
-
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
@@ -30,9 +29,9 @@ public class JwtFilter extends GenericFilterBean {
             ,"/favicon.ico"
             ,"/error"
             ,"/logout"
-            ,"/home", "/signup", "/login", "/user/loginId", "/user/password/recover", "/email"
+            ,"/home", "/signup", "/api/v1/auth/login", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
             , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
-            , "/oauth2/**", "/", "/oauth2/*"
+            , "/oauth2/**", "/oauth2/*"
     };
     private final TokenProvider tokenProvider;
     @Override
@@ -42,9 +41,10 @@ public class JwtFilter extends GenericFilterBean {
         logger.info("do Filter");
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(path::startsWith)) {
+        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(requestURI::startsWith)) {
             logger.info("permit: " + requestURI);
             filterChain.doFilter(servletRequest, servletResponse);
             return;
@@ -67,6 +67,6 @@ public class JwtFilter extends GenericFilterBean {
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "accessToken".equals(cookie.getName()))
                 .map(Cookie::getValue)
-                .findFirst().orElseThrow(() -> new ValidateException(HttpStatus.BAD_REQUEST, "세션이 만료되었거나 유효하지 않습니다."));
+                .findFirst().orElseThrow(() -> new ApiException(ErrorType.INVALID_ACCESSTOKEN));
     }
 }
