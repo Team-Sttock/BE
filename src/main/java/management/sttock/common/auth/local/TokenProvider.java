@@ -171,7 +171,7 @@ public class TokenProvider implements InitializingBean {
     private boolean checkExpirationDate(RefreshToken refreshToken) {
         if(refreshToken.getExpiredDt().isBefore(LocalDateTime.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new ApiException(ErrorType.EXPIRED_REFRESHTOKEN);
+            throw new ApiException(ErrorType.INVALID_REFRESHTOKEN);
         }
         return true;
     }
