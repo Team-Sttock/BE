@@ -29,7 +29,7 @@ public class JwtFilter extends GenericFilterBean {
             ,"/favicon.ico"
             ,"/error"
             ,"/logout"
-            ,"/home", "/signup", "/api/v1/auth/login", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
+            ,"/home", "/signup", "/api/v1/auth/login", "/api/v1/user/check", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
             , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
             , "/oauth2/**", "/oauth2/*"
     };
@@ -41,7 +41,6 @@ public class JwtFilter extends GenericFilterBean {
         logger.info("do Filter");
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String requestURI = httpServletRequest.getRequestURI();
 
         if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(requestURI::startsWith)) {
