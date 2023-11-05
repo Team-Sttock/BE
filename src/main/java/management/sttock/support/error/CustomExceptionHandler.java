@@ -1,10 +1,12 @@
 package management.sttock.support.error;
 
+import javax.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException.InternalServerError;
@@ -16,10 +18,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     ErrorResponse response = new ErrorResponse();
 
     @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status,
+            WebRequest request) {
+        log.error("MissingServletRequestParameterException: {}", ex);
+        return ResponseEntity.badRequest().body(response.updateErrorResponse(ErrorType.BAD_REQUEST_DATA));
+    }
+
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("MethodArgumentNotValidException: {}", ex);
         return ResponseEntity.badRequest().body(response.updateErrorResponse(ErrorType.BAD_REQUEST_DATA));
+    }
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ResponseEntity handleUnexpectedException(UnexpectedTypeException ex){
+        log.error("UnexpectedTypeException: {}", ex);
+        ApiException apiException = new ApiException(ErrorType.BAD_REQUEST_DATA);
+        return ResponseEntity.status(apiException.getErrorType().getStatus()).body(response.updateErrorResponse(apiException.getErrorType()));
     }
 
     @ExceptionHandler(ApiException.class)

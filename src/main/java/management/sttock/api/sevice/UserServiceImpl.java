@@ -1,5 +1,6 @@
 package management.sttock.api.sevice;
 
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.user.SignupRequest;
@@ -111,7 +112,8 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userRepository.findByLoginId(authentication.getName()).get();
             return new UserInfo(user.getLoginId(), user.getName(),
-                    user.getGenderCd(), user.getEmail(), user.getFamilyNum(), user.getBirthday().toString());
+                    user.getGenderCd(), user.getEmail(), user.getFamilyNum(),
+                    user.getBirthday().toString());
         } catch (NoSuchElementException e) {
             throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
@@ -181,6 +183,18 @@ public class UserServiceImpl implements UserService {
     public void userMe(HttpServletRequest request, Authentication authentication) {
         try {
             userRepository.findByLoginId(authentication.getName());
+        } catch (NoSuchElementException e) {
+            throw new ApiException(ErrorType.USER_NOT_FOUND);
+        } catch (Exception e) {
+            throw new ApiException(ErrorType.SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public int getNumberOfFamily(HttpServletRequest request, Authentication authentication) {
+
+        try {
+            return userRepository.findByLoginId(authentication.getName()).get().getFamilyNum();
         } catch (NoSuchElementException e) {
             throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {

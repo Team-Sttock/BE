@@ -24,11 +24,6 @@ public enum ErrorType {
             ErrorCode.E401003,
             ErrorCode.E401003.getErrorMessage()
     ),
-    EXPIRED_REFRESHTOKEN(
-            HttpStatus.UNAUTHORIZED,
-            ErrorCode.E401004,
-            ErrorCode.E401004.getErrorMessage()
-    ),
     UNAUTHENTICATED_STATUS(
       HttpStatus.UNAUTHORIZED,
       ErrorCode.E401005,

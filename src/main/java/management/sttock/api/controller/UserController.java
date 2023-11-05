@@ -91,6 +91,11 @@ public class UserController {
         userService.userMe(request, authentication);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/family_number")
+    public ResponseEntity getNumberOfFamily(HttpServletRequest request, Authentication authentication){
+        int numberOfFamily = userService.getNumberOfFamily(request, authentication);
+        return ResponseEntity.status(200).body(setResponseMesssage("family_number", numberOfFamily));
+    }
 
     private ConcurrentHashMap<String, Object> setResponseMesssage(String commentMessage, Object comment) {
         ConcurrentHashMap<String, Object> response = new ConcurrentHashMap<>();
