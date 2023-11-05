@@ -22,6 +22,7 @@ public class SignupRequest {
     private int genderCd;
     @Pattern(regexp = "^[a-zA-Z0-9]+([._%+-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,}$", message = "이메일을 입력해주세요")
     private String email;
+    @NotBlank
     @JsonProperty("family_num")
     private int familyNum;
     private String birthday;

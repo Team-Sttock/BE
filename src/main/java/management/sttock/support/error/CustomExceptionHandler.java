@@ -1,5 +1,6 @@
 package management.sttock.support.error;
 
+import javax.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("MethodArgumentNotValidException: {}", ex);
         return ResponseEntity.badRequest().body(response.updateErrorResponse(ErrorType.BAD_REQUEST_DATA));
+    }
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ResponseEntity handleUnexpectedException(UnexpectedTypeException ex){
+        log.error("UnexpectedTypeException: {}", ex);
+        ApiException apiException = new ApiException(ErrorType.BAD_REQUEST_DATA);
+        return ResponseEntity.status(apiException.getErrorType().getStatus()).body(response.updateErrorResponse(apiException.getErrorType()));
     }
 
     @ExceptionHandler(ApiException.class)
