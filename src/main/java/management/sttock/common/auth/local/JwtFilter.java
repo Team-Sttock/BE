@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -29,21 +30,21 @@ public class JwtFilter extends GenericFilterBean {
             ,"/favicon.ico"
             ,"/error"
             ,"/logout"
-            ,"/home", "/api/v1/user/signup", "/api/v1/auth/login", "/api/v1/user/check", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email"
+            ,"/home", "/api/v1/user/signup", "/api/v1/auth/login", "/api/v1/user/check", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email", "/api/v1/user/email/verification-code", "/api/v1/user/email/check-verification-code"
             , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
-            , "/oauth2/**", "/oauth2/*"
+            , "/oauth2/**", "/", "/oauth2/*"
+            , "/", "/api/v1/login"
     };
     private final TokenProvider tokenProvider;
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-
-        logger.info("do Filter");
-
+        AntPathMatcher pathMatcher = new AntPathMatcher();
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestURI = httpServletRequest.getRequestURI();
+        logger.info("do Filter");
 
-        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(requestURI::startsWith)) {
+        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
             logger.info("permit: " + requestURI);
             filterChain.doFilter(servletRequest, servletResponse);
             return;
