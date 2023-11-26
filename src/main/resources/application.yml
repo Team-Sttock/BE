@@ -9,7 +9,18 @@ server:
 
 spring:
   profiles:
-    active: local
+    group:
+      "local": "local, oauth"
+      "dev": "dev, oauth"
+    default: dev
+
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template: true
+    suffix: .html
+    mode: HTML5
+    cache: false
+
 
   jpa:
     hibernate:
@@ -28,10 +39,27 @@ spring:
           auth: true
           timeout: 50000
           starttls.enable: true
-        debug=: true
+        debug: true
   redis:
     host: localhost
     port: 6379
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+cloud:
+  aws:
+    s3:
+      bucket: sttock-bucket
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: ${S3_ACCESS_KEY}
+      secret-key: ${S3_SECRET_KEY}
 
 logging:
   level:

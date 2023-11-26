@@ -2,6 +2,8 @@ package management.sttock.db.entity;
 
 import lombok.*;
 import management.sttock.api.dto.user.UserInfo;
+import management.sttock.db.entity.enums.SocialType;
+import management.sttock.db.entity.Role;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    private String nickname; //사용자 입력 id
+    @Column(name = "login_id")
+    private String loginId; //사용자 입력 id
 
     private String password;
 
@@ -31,15 +34,24 @@ public class User {
     @Column(name = "family_num")
     private int familyNum;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     private Date birthday;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
 
     @OneToMany(mappedBy = "user")
     private List<RefreshToken> refreshTokens = new ArrayList<>();
 
-    public User(Long id, String nickname, String password, String name,
+    public User(Long id, String loginId, String password, String name,
                 int genderCd, String email, int familyNum, Date birthday) {
         this.id = id;
-        this.nickname = nickname;
+        this.loginId = loginId;
         this.password = password;
         this.name = name;
         this.genderCd = genderCd;
@@ -49,7 +61,7 @@ public class User {
     }
 
     public void updateUser(final UserInfo request, Date birthday){
-        this.nickname = request.getNickname();
+        this.loginId = request.getLoginId();
         this.name = request.getName();
         this.genderCd = request.getGenderCd();
         this.email = request.getEmail();

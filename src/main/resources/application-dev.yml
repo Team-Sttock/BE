@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://sttock-db.czucwa8unx8n.ap-northeast-2.rds.amazonaws.com:3306/sttockDB?serverTimezone=Asia/Seoul
+    username: master
+    password: victo08011205
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO

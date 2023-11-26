@@ -1,11 +1,10 @@
 package management.sttock.api.sevice;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.common.exception.ServerException;
-import management.sttock.common.exception.ValidateException;
 import management.sttock.db.entity.VerificationCode;
 import management.sttock.db.repository.VerificationCodeRepository;
-import org.springframework.http.HttpStatus;
+import management.sttock.support.error.ApiException;
+import management.sttock.support.error.ErrorType;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +42,7 @@ public class MailSendServiceImpl implements MailSendService {
         int expectedAuthNumber = verificationCode.getAuthNumber();
         boolean isNotMatchAuthCode = expectedAuthNumber != authNumber;
         if (isNotMatchAuthCode) {
-            throw new ValidateException(HttpStatus.BAD_REQUEST, "인증 번호가 잘못되었습니다.");
+            throw new ApiException(ErrorType.BAD_REQUEST_DATA);
         }
         verificationCode.setVerificationStatus(true);
         verificationCodeRepository.save(verificationCode);
@@ -56,7 +55,7 @@ public class MailSendServiceImpl implements MailSendService {
                 .orElse(false);
 
         if(!verificationStatus) {
-            throw new ValidateException(HttpStatus.BAD_REQUEST, "이메일 인증 후 다시 회원가입을 시도해주세요");
+            throw new ApiException(ErrorType.UNAUTHENTICATED_STATUS);
         }
     }
 
@@ -96,7 +95,7 @@ public class MailSendServiceImpl implements MailSendService {
                 "<br><br>" +
                 "인증번호는 " + checkNumber + " 입니다." +
                 "<br><br>" +
-                "해당 인증번호를 인증번호 확인한에 기입하여 주시기 바랍니다.";
+                "해당 인증번호를 인증번호 확인란에 기입하여 주시기 바랍니다.";
         sendEmailForAuth(title, email, content);
     }
 
@@ -116,7 +115,7 @@ public class MailSendServiceImpl implements MailSendService {
         try {
             sendMail(title, email, content);
         } catch (MessagingException e) {
-            throw new ServerException("인증번호 전송 실패");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 
@@ -125,7 +124,7 @@ public class MailSendServiceImpl implements MailSendService {
         try {
             sendMail(title, email, content);
         } catch (MessagingException e) {
-            throw new ServerException("임시 비밀번호 전송 실패");
+            throw new ApiException(ErrorType.SERVER_ERROR);
         }
     }
 

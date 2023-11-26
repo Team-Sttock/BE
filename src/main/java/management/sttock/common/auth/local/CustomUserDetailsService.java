@@ -21,13 +21,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByNickname(nickname);
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByLoginId(loginId);
 
         if(user.isEmpty()) {
             throw new UsernameNotFoundException("일치하는 회원이 없습니다.");
         }
         List<GrantedAuthority> authorities = Collections.emptyList();//일단 권한 정보 비워둠
-        return new org.springframework.security.core.userdetails.User(user.get().getNickname(), user.get().getPassword(), authorities);
+        return new CustomUserDetails(user.get().getLoginId(), user.get().getPassword(), authorities);
     }
 }
