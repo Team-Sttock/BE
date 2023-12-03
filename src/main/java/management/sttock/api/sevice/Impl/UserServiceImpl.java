@@ -1,11 +1,12 @@
-package management.sttock.api.sevice;
+package management.sttock.api.sevice.Impl;
 
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 
+import management.sttock.api.sevice.Impl.MailSendServiceImpl;
+import management.sttock.api.sevice.UserService;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.RefreshTokenRepository;
 import management.sttock.db.repository.UserRepository;
@@ -29,11 +30,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendAuthNumber(String email) {
+        validateEmail(email);
         mailSendService.sendAuthNumber(email);
     }
 
     @Override
     public void checkAuthNumber(String email, int authNumber) {
+        validateEmail(email);
         mailSendService.checkAuthNumber(email, authNumber);
     }
 

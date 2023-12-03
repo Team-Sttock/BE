@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
-import management.sttock.api.sevice.UserServiceImpl;
+import management.sttock.api.sevice.Impl.UserServiceImpl;
 import management.sttock.common.define.ApiPath;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

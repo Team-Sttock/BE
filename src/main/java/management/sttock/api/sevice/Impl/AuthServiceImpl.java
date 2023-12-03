@@ -1,8 +1,9 @@
-package management.sttock.api.sevice;
+package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
+import management.sttock.api.sevice.AuthService;
 import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
 import management.sttock.db.entity.RefreshToken;

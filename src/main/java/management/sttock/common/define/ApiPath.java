@@ -13,7 +13,7 @@ public class ApiPath extends CorePath{
     private static final String USER = "/user";
     public static final String V1_USER = V1 + USER;
     public static final String SIGN_UP = "/signup";
-    public static final String V1_AUTH = V1;
+    public static final String V1_AUTH = V1 + AUTH;
 
     /* product */
     public static final String PRODUCTS = "/products";
