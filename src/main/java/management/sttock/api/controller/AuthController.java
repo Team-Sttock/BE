@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
-import management.sttock.api.sevice.AuthServiceImpl;
+import management.sttock.api.sevice.Impl.AuthServiceImpl;
 import management.sttock.common.define.ApiPath;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
