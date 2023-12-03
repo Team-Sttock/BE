@@ -31,7 +31,7 @@ public class JwtFilter extends GenericFilterBean {
             ,"/error"
             ,"/logout"
             ,"/home", "/api/v1/user/signup", "/api/v1/auth/login", "/api/v1/user/check", "/api/v1/user/loginId", "/api/v1/user/temp-password", "/api/v1/user/email", "/api/v1/user/email/verification-code", "/api/v1/user/email/check-verification-code"
-            , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api-docs/**"
+            , "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui/index.html", "/api-docs/**"
             , "/oauth2/**", "/", "/oauth2/*"
             , "/", "/api/v1/login"
     };
