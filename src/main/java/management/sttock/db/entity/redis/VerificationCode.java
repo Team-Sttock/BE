@@ -1,4 +1,4 @@
-package management.sttock.db.entity;
+package management.sttock.db.entity.redis;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
