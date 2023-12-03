@@ -1,5 +1,7 @@
 package management.sttock.api.dto.product;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import management.sttock.db.entity.CommonCode;
@@ -10,6 +12,7 @@ import management.sttock.db.entity.User;
 import java.time.LocalDateTime;
 
 @Data
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductRequest {
     private Long prodId;
     private String categoryCd;// 물건 카테고리
@@ -21,6 +24,8 @@ public class ProductRequest {
     private int expectedDays;// 예상 사용 일수
     private int numberOfUser;//사용 인원
     private LocalDateTime expirationDate;//유통기한
+
+    private LocalDateTime buyDt;
 
     public StockMaster toEntity(Product product, User user, CommonCode stateCode){
         StockMaster stockmaster = StockMaster.builder()
@@ -35,6 +40,7 @@ public class ProductRequest {
                                                 .cycleEndDt(LocalDateTime.now().plusDays(expectedDays))
                                                 .useYn("Y")
                                                 .expirationDt(expirationDate)
+                                                .buyDt(buyDt)
                                                 .build();
         stockmaster.setCrtBy(user);
         return stockmaster;

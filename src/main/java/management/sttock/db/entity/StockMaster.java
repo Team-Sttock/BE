@@ -56,10 +56,13 @@ public class StockMaster extends BaseEntity {
     private Integer buyQty; // 구매 갯수
 
     @Column(name = "cycle_end_dt")
-    private LocalDateTime cycleEndDt;
+    private LocalDateTime cycleEndDt; // 주기 종료 날짜
 
     @Column(name = "use_yn")
     private String useYn;
+
+    @Column(name = "buy_dt")
+    private LocalDateTime buyDt; // 구매 날짜
 
     @Column(name = "expiration_dt")
     private LocalDateTime expirationDt; // 유통기한
@@ -68,7 +71,7 @@ public class StockMaster extends BaseEntity {
     private List<StockDetail> stockDetailList = new ArrayList<>();
 
     @Builder
-    public StockMaster(User user, Product product, String nickname, CommonCode state, Integer basicAmount, Integer basicUsage, Integer headCount, Integer buyQty, LocalDateTime cycleEndDt, String useYn, LocalDateTime expirationDt) {
+    public StockMaster(User user, Product product, String nickname, CommonCode state, Integer basicAmount, Integer basicUsage, Integer headCount, Integer buyQty, LocalDateTime cycleEndDt, String useYn, LocalDateTime expirationDt, LocalDateTime buyDt) {
         this.user = user;
         this.product = product;
         this.nickname = nickname;
@@ -80,5 +83,6 @@ public class StockMaster extends BaseEntity {
         this.cycleEndDt = cycleEndDt;
         this.useYn = useYn;
         this.expirationDt = expirationDt;
+        this.buyDt = buyDt;
     }
 }
