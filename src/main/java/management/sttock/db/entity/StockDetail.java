@@ -1,6 +1,7 @@
 package management.sttock.db.entity;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import management.sttock.db.entity.base.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Entity(name = "stock_detail")
 @DynamicInsert
 @DynamicUpdate
+@Getter
 public class StockDetail extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
