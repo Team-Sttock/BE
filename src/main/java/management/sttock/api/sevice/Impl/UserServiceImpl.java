@@ -2,10 +2,10 @@ package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 
-import management.sttock.api.sevice.Impl.MailSendServiceImpl;
 import management.sttock.api.sevice.UserService;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.RefreshTokenRepository;
@@ -13,6 +13,7 @@ import management.sttock.db.repository.UserRepository;
 import management.sttock.support.error.ApiException;
 import management.sttock.support.error.ErrorType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MailSendServiceImpl mailSendService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void sendAuthNumber(String email) {
@@ -150,11 +152,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String password, HttpServletRequest request, Authentication authentication) {
+    public void updatePassword(PasswordRequest requestDto, HttpServletRequest request, Authentication authentication) {
         try {
-            updatePassword(password, authentication.getName());
-        } catch (NoSuchElementException e) {
-            throw new ApiException(ErrorType.USER_NOT_FOUND);
+            User user = userRepository.findByLoginId(authentication.getName())
+                    .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+            if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
+                throw new ApiException(ErrorType.UNPROCESSABLE_PASSWORD);
+            }
+            updatePassword(requestDto.getNewPassword(), authentication.getName());
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
         }

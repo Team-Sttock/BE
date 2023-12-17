@@ -16,6 +16,7 @@ public enum ErrorCode {
     E404004("WEEKLY_NOT_FOUND"),
     E409001("LOGINID_CONFLICT"),
     E409002("EMAIL_CONFLICT"),
+    E422001("UNPROCESSABLE_PASSWORD"),
     E500001("SERVER_ERROR");
 
     private String errorMessage;

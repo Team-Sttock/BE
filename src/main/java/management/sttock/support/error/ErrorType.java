@@ -64,6 +64,11 @@ public enum ErrorType {
             ErrorCode.E409002,
             ErrorCode.E409002.getErrorMessage()
     ),
+    UNPROCESSABLE_PASSWORD(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            ErrorCode.E422001,
+            ErrorCode.E422001.getErrorMessage()
+    ),
     SERVER_ERROR(
             HttpStatus.INTERNAL_SERVER_ERROR,
             ErrorCode.E500001,

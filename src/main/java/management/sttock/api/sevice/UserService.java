@@ -1,5 +1,6 @@
 package management.sttock.api.sevice;
 
+import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 import org.springframework.security.core.Authentication;
@@ -16,7 +17,7 @@ public interface UserService {
     UserInfo getUserInfo(HttpServletRequest request, Authentication authentication);
     void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication);
     void withdrawUser(HttpServletRequest request, Authentication authentication);
-    void updatePassword(String password, HttpServletRequest request, Authentication authentication);
+    void updatePassword(PasswordRequest requestDto, HttpServletRequest request, Authentication authentication);
     void userMe(HttpServletRequest request, Authentication authentication);
     int getNumberOfFamily(HttpServletRequest request, Authentication authentication);
     void updateTempPassword(String email, String loginId);
