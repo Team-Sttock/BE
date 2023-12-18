@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
 
 @Getter
 @AllArgsConstructor
 public class CookieResponse {
-    private Cookie accessToken;
-    private Cookie refreshToken;
+    private ResponseCookie accessToken;
+    private ResponseCookie refreshToken;
 }

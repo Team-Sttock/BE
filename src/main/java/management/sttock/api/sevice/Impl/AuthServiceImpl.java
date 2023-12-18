@@ -1,6 +1,7 @@
 package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.api.sevice.AuthService;
@@ -12,6 +13,7 @@ import management.sttock.db.repository.AuthRespository;
 import management.sttock.db.repository.RefreshTokenRepository;
 import management.sttock.support.error.ApiException;
 import management.sttock.support.error.ErrorType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -49,8 +51,8 @@ public class AuthServiceImpl implements AuthService {
             RefreshToken refreshToken = tokenProvider.createRefreshToken(user.get(), userDetails);
 
             refreshTokenRepository.save(refreshToken);
-            Cookie accessTokenInCookie = setTokenInCookie("accessToken", token);
-            Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
+            ResponseCookie accessTokenInCookie = setTokenInCookie("accessToken", token);
+            ResponseCookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
             return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
 
         } catch (NoSuchElementException e) {
@@ -66,6 +68,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             RefreshToken refreshToken = getRefreshToken(request);
             refreshTokenRepository.delete(refreshToken);
+
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
         }
@@ -77,9 +80,8 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken refreshToken = getRefreshToken(request);
         String renewToken = tokenProvider.renewToken(refreshToken);
 
-        Cookie accessTokenInCookie = setTokenInCookie("accessToken", renewToken);
-        Cookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
-
+        ResponseCookie accessTokenInCookie = setTokenInCookie("accessToken", renewToken);
+        ResponseCookie refreshTokenInCookie = setTokenInCookie("refreshToken", refreshToken.getToken());
         return new CookieResponse(accessTokenInCookie, refreshTokenInCookie);
     }
 
@@ -99,11 +101,12 @@ public class AuthServiceImpl implements AuthService {
                 .findFirst().orElseThrow(() -> new ApiException(ErrorType.INVALID_REFRESHTOKEN));
     }
 
-    private Cookie setTokenInCookie(String tokenName, String token) {
-        Cookie cookie = new Cookie(tokenName, token);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) tokenProvider.getTokenExpiration(tokenName));
-        cookie.setPath("/");
-        return cookie;
+    private ResponseCookie setTokenInCookie(String tokenName, String token) {
+        return ResponseCookie.from(tokenName, token)
+                .httpOnly(true)
+                .maxAge(tokenProvider.getTokenExpiration(tokenName))
+                .path("/")
+                .sameSite("Lax")
+                .build();
     }
 }
