@@ -1,5 +1,6 @@
 package management.sttock.api.sevice.Impl;
 
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.auth.LoginRequest;
@@ -64,13 +65,28 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void logout(HttpServletRequest request) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         try {
             RefreshToken refreshToken = getRefreshToken(request);
             refreshTokenRepository.delete(refreshToken);
 
+            Cookie[] cookies = request.getCookies();
+            removeCookie(cookies, response, "accessToken");
+            removeCookie(cookies, response, "refreshToken");
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
+        }
+    }
+    private void removeCookie(Cookie[] cookies, HttpServletResponse response, String cookieName){
+        if (cookies != null) {
+            Arrays.stream(cookies)
+                    .filter(cookie -> cookie.getName().equals(cookieName))
+                    .findFirst()
+                    .ifPresent(cookie -> {
+                        cookie.setMaxAge(0); // 쿠키 만료
+                        cookie.setPath("/"); // 경로 설정
+                        response.addCookie(cookie);
+                    });
         }
     }
 
