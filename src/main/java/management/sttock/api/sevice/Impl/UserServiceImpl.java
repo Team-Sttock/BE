@@ -1,5 +1,8 @@
 package management.sttock.api.sevice.Impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import management.sttock.api.dto.user.PasswordRequest;
@@ -18,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 @Slf4j
@@ -46,7 +48,6 @@ public class UserServiceImpl implements UserService {
     public void register(SignupRequest request) {
         validateloginId(request.getLoginId());
         validateEmail(request.getEmail());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         mailSendService.checkVerificationStatus(request.getEmail());
 
@@ -58,13 +59,19 @@ public class UserServiceImpl implements UserService {
                     .genderCd(request.getGenderCd())
                     .email(request.getEmail())
                     .familyNum(request.getFamilyNum())
-                    .birthday(format.parse(request.getBirthday()))
+                    .birthday(convertUtcToLocalDate(request.getBirthday()))
                     .build();
 
             userRepository.save(user);
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
         }
+    }
+    private static LocalDate convertUtcToLocalDate(String utcDateString){
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(utcDateString)
+                .withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime koreaDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        return koreaDateTime.toLocalDate();
     }
 
     @Override
@@ -128,7 +135,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         boolean isUserEmpty = userRepository.findByLoginId(authentication.getName()).isEmpty();
 
         if(isUserEmpty) throw new ApiException(ErrorType.USER_NOT_FOUND);
@@ -144,7 +150,7 @@ public class UserServiceImpl implements UserService {
             validateEmail(requestDto.getEmail());
         }
         try {
-            user.updateUser(requestDto, format.parse(requestDto.getBirthday()));
+            user.updateUser(requestDto, convertUtcToLocalDate(requestDto.getBirthday()));
             userRepository.save(user);
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
