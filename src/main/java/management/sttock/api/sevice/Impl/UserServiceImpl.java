@@ -68,6 +68,9 @@ public class UserServiceImpl implements UserService {
         }
     }
     private static LocalDate convertUtcToLocalDate(String utcDateString){
+        if (utcDateString == null || utcDateString.trim().isEmpty()) {
+            return null;
+        }
         ZonedDateTime utcDateTime = ZonedDateTime.parse(utcDateString)
                 .withZoneSameInstant(ZoneId.of("UTC"));
         ZonedDateTime koreaDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
