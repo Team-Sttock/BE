@@ -6,6 +6,7 @@ import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
 import management.sttock.api.sevice.Impl.AuthServiceImpl;
 import management.sttock.common.define.ApiPath;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,23 +26,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity login(@Valid @RequestBody LoginRequest request, HttpServletResponse response){
         CookieResponse cookieResponse = authService.login(request);
-        response.addCookie(cookieResponse.getAccessToken());
-        response.addCookie(cookieResponse.getRefreshToken());
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieResponse.getAccessToken().toString() + ";" + cookieResponse.getRefreshToken().toString());
         return ResponseEntity.status(200).body(setResponseMesssage("message","로그인에 성공했습니다."));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request){
-        authService.logout(request);
+    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response){
+        authService.logout(request, response);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "로그아웃에 성공했습니다."));
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
         CookieResponse cookieResponse = authService.refreshToken(request);
-        response.addCookie(cookieResponse.getAccessToken());
-        response.addCookie(cookieResponse.getRefreshToken());
 
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieResponse.getAccessToken().toString());
+        response.setHeader(HttpHeaders.SET_COOKIE, cookieResponse.getRefreshToken().toString());
         return ResponseEntity.status(200).body(setResponseMesssage("message", "accessToken 갱신에 성공했습니다."));
     }
 

@@ -1,13 +1,12 @@
 package management.sttock.db.entity;
 
+import java.time.LocalDate;
 import lombok.*;
 import management.sttock.api.dto.user.UserInfo;
 import management.sttock.db.entity.enums.SocialType;
-import management.sttock.db.entity.Role;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -38,7 +37,7 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    private Date birthday;
+    private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType; // KAKAO, NAVER, GOOGLE
@@ -49,7 +48,7 @@ public class User {
     private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     public User(Long id, String loginId, String password, String name,
-                int genderCd, String email, int familyNum, Date birthday) {
+                int genderCd, String email, int familyNum, LocalDate birthday) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;
@@ -60,7 +59,7 @@ public class User {
         this.birthday = birthday;
     }
 
-    public void updateUser(final UserInfo request, Date birthday){
+    public void updateUser(final UserInfo request, LocalDate birthday){
         this.loginId = request.getLoginId();
         this.name = request.getName();
         this.genderCd = request.getGenderCd();
@@ -71,4 +70,5 @@ public class User {
     public void updatePassword(String password){
         this.password = password;
     }
+
 }

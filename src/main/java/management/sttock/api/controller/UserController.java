@@ -75,8 +75,8 @@ public class UserController {
     @PatchMapping("/password")
     public ResponseEntity updatePassword(@Valid @RequestBody PasswordRequest requestDto, HttpServletRequest request,
                                                               Authentication authentication){
-        String password = passwordEncoder.encode(requestDto.getPassword());
-        userService.updatePassword(password, request, authentication);
+        requestDto.changeEncodeNewPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userService.updatePassword(requestDto, request, authentication);
         return ResponseEntity.status(200).body(setResponseMesssage("message", "비밀번호를 성공적으로 변경했습니다."));
     }
 

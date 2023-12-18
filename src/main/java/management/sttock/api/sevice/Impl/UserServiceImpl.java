@@ -1,11 +1,14 @@
 package management.sttock.api.sevice.Impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import management.sttock.api.dto.user.PasswordRequest;
 import management.sttock.api.dto.user.SignupRequest;
 import management.sttock.api.dto.user.UserInfo;
 
-import management.sttock.api.sevice.Impl.MailSendServiceImpl;
 import management.sttock.api.sevice.UserService;
 import management.sttock.db.entity.User;
 import management.sttock.db.repository.RefreshTokenRepository;
@@ -13,11 +16,11 @@ import management.sttock.db.repository.UserRepository;
 import management.sttock.support.error.ApiException;
 import management.sttock.support.error.ErrorType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 @Slf4j
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MailSendServiceImpl mailSendService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void sendAuthNumber(String email) {
@@ -44,7 +48,6 @@ public class UserServiceImpl implements UserService {
     public void register(SignupRequest request) {
         validateloginId(request.getLoginId());
         validateEmail(request.getEmail());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         mailSendService.checkVerificationStatus(request.getEmail());
 
@@ -56,13 +59,22 @@ public class UserServiceImpl implements UserService {
                     .genderCd(request.getGenderCd())
                     .email(request.getEmail())
                     .familyNum(request.getFamilyNum())
-                    .birthday(format.parse(request.getBirthday()))
+                    .birthday(convertUtcToLocalDate(request.getBirthday()))
                     .build();
 
             userRepository.save(user);
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
         }
+    }
+    private static LocalDate convertUtcToLocalDate(String utcDateString){
+        if (utcDateString == null || utcDateString.trim().isEmpty()) {
+            return null;
+        }
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(utcDateString)
+                .withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime koreaDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        return koreaDateTime.toLocalDate();
     }
 
     @Override
@@ -114,9 +126,12 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserInfo(HttpServletRequest request, Authentication authentication) {
         try {
             User user = userRepository.findByLoginId(authentication.getName()).get();
+
+            String birthday = (user.getBirthday() == null) ? "" : user.getBirthday().toString();
+
             return new UserInfo(user.getLoginId(), user.getName(),
                     user.getGenderCd(), user.getEmail(), user.getFamilyNum(),
-                    user.getBirthday().toString());
+                    birthday);
         } catch (NoSuchElementException e) {
             throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
@@ -126,7 +141,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserInfo(UserInfo requestDto, HttpServletRequest request, Authentication authentication) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         boolean isUserEmpty = userRepository.findByLoginId(authentication.getName()).isEmpty();
 
         if(isUserEmpty) throw new ApiException(ErrorType.USER_NOT_FOUND);
@@ -142,7 +156,7 @@ public class UserServiceImpl implements UserService {
             validateEmail(requestDto.getEmail());
         }
         try {
-            user.updateUser(requestDto, format.parse(requestDto.getBirthday()));
+            user.updateUser(requestDto, convertUtcToLocalDate(requestDto.getBirthday()));
             userRepository.save(user);
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
@@ -150,11 +164,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String password, HttpServletRequest request, Authentication authentication) {
+    public void updatePassword(PasswordRequest requestDto, HttpServletRequest request, Authentication authentication) {
         try {
-            updatePassword(password, authentication.getName());
-        } catch (NoSuchElementException e) {
-            throw new ApiException(ErrorType.USER_NOT_FOUND);
+            User user = userRepository.findByLoginId(authentication.getName())
+                    .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+            if (!passwordEncoder.matches(requestDto.getOldPassword(), user.getPassword())) {
+                throw new ApiException(ErrorType.UNPROCESSABLE_PASSWORD);
+            }
+            updatePassword(requestDto.getNewPassword(), authentication.getName());
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             throw new ApiException(ErrorType.SERVER_ERROR);
         }
