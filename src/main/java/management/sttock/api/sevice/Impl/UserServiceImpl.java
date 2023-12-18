@@ -123,9 +123,12 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserInfo(HttpServletRequest request, Authentication authentication) {
         try {
             User user = userRepository.findByLoginId(authentication.getName()).get();
+
+            String birthday = (user.getBirthday() == null) ? "" : user.getBirthday().toString();
+
             return new UserInfo(user.getLoginId(), user.getName(),
                     user.getGenderCd(), user.getEmail(), user.getFamilyNum(),
-                    user.getBirthday().toString());
+                    birthday);
         } catch (NoSuchElementException e) {
             throw new ApiException(ErrorType.USER_NOT_FOUND);
         } catch (Exception e) {
