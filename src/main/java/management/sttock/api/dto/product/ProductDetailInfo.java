@@ -2,6 +2,7 @@ package management.sttock.api.dto.product;
 
 import lombok.Data;
 import management.sttock.db.entity.StockMaster;
+import management.sttock.db.entity.enums.State;
 
 import java.time.LocalDateTime;
 
@@ -38,8 +39,8 @@ public class ProductDetailInfo {
         this.purchaseNumber = sm.getBuyQty();
         this.numberOfUser = sm.getHeadCount();
         this.expirationDate = sm.getExpirationDt();
-        this.categoryUrl = sm.getProduct().getProductCategoryCd().getImageUrl();
-        this.state = sm.getState().getCode();
+        this.categoryUrl = sm.getProduct().getProductCategoryCd().getCode(); //Todo: imageUrl 로 변경
+        this.state = State.USING.getName(); //Todo: 수정예정
     }
 
 

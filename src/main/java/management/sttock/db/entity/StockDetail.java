@@ -21,10 +21,12 @@ public class StockDetail extends BaseEntity {
     private Long StockDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_master_id")
+    @JoinColumn(name = "sm_id")
     private StockMaster stockMaster;
 
-    @Column(name =  "use_amount")
     private Integer useAmount; // 사용량
 
+    public void setStockMaster(StockMaster stockMaster) {
+        this.stockMaster = stockMaster;
+    }
 }

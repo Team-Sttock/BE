@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "user")
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -26,11 +27,9 @@ public class User {
 
     private String name;
 
-    @Column(name = "gender_cd")
     private int genderCd;
 
     private String email;
-    @Column(name = "family_num")
     private int familyNum;
 
     @ManyToOne
@@ -46,6 +45,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<RefreshToken> refreshTokens = new ArrayList<>();
+
 
     public User(Long id, String loginId, String password, String name,
                 int genderCd, String email, int familyNum, LocalDate birthday) {

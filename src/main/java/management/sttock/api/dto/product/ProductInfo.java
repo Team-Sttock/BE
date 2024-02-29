@@ -1,7 +1,8 @@
-package management.sttock.api.dto.sm;
+package management.sttock.api.dto.product;
 
 import lombok.Data;
 import management.sttock.db.entity.StockMaster;
+import management.sttock.db.entity.enums.State;
 
 import java.time.LocalDateTime;
 
@@ -28,9 +29,9 @@ public class ProductInfo {
         this.prodId = sm.getProduct().getProductId();
         this.prodName = sm.getProduct().getName();
         this.categoryCd = sm.getProduct().getProductCategoryCd().getCode();
-        this.categoryImageUrl = sm.getProduct().getProductCategoryCd().getImageUrl();
+        this.categoryImageUrl = sm.getProduct().getProductCategoryCd().getCode(); // Todo: imageUrl로 변경예정
         this.purchaseDate = sm.getCrtDt();
         this.expectedDays = sm.getBasicAmount() / sm.getBasicUsage();
-        this.state = sm.getState().getCode();
+        this.state = State.USING.getName(); // Todo: 수정 예정
     }
 }

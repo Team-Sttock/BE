@@ -29,8 +29,8 @@ public class SwaggerConfig {
         Server localServer = new Server().description("Local API").url("http://localhost:8080");
 
         List<Server> servers = new ArrayList<>();
-        servers.add(apiServer);
         servers.add(localServer);
+        servers.add(apiServer);
 
         /** 인증 토큰 **/
         String jwtSchemeName = "jwtAuth";

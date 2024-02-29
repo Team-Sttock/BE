@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "refresh_token")
 public class RefreshToken {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "refresh_token_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 

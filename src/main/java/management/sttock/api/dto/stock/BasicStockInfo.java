@@ -2,6 +2,7 @@ package management.sttock.api.dto.stock;
 
 import lombok.Data;
 import management.sttock.db.entity.StockMaster;
+import management.sttock.db.entity.enums.State;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,6 @@ public class BasicStockInfo {
         this.prodName = sm.getProduct().getName();
         this.categoryCd = sm.getProduct().getProductCategoryCd().getCode();
         this.purchaseDate = sm.getCrtDt();
-        this.state = sm.getState().getCode();
+        this.state = State.USING.getName();// Todo: 변경 예정
     }
 }

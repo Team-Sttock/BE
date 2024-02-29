@@ -40,25 +40,26 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String requestURI = httpServletRequest.getRequestURI();
-        logger.info("do Filter");
-
-        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
-            logger.info("permit: " + requestURI);
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
-
-        String jwt = resolveToken(httpServletRequest);
-
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-        } else {
-            logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
-        }
+        // Todo: 추후 인증로직추가
+//        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+//        String requestURI = httpServletRequest.getRequestURI();
+//        logger.info("do Filter");
+//
+//        if (Arrays.stream(PERMIT_ALL_REQUESTS).anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
+//            logger.info("permit: " + requestURI);
+//            filterChain.doFilter(servletRequest, servletResponse);
+//            return;
+//        }
+//
+//        String jwt = resolveToken(httpServletRequest);
+//
+//        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+//            Authentication authentication = tokenProvider.getAuthentication(jwt);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+//        } else {
+//            logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+//        }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

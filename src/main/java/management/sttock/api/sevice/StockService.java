@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 public interface StockService {
     void insertStock(ProductRequest productRequest, Authentication authentication);
 
-    Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, Authentication authentication);
+    Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, Authentication authentication, Long userId);
 
     Sort getSortedBy(String sortBy);
 

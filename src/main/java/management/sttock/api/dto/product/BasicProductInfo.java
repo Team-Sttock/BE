@@ -16,8 +16,8 @@ public class BasicProductInfo {
     public BasicProductInfo(Product product){
         this.prodName = product.getName();
         this.categoryCd = product.getProductCategoryCd().getCode();
-        this.basicExpectedAmount = product.getProductUsage();
-        this.basicExpectedUnit = product.getUnitCd().getCode();
+        this.basicExpectedAmount = product.getUsageCount();
+        this.basicExpectedUnit = product.getUnitCd().getName();
     }
 
 }

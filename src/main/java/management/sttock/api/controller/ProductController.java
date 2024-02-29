@@ -26,27 +26,4 @@ import javax.servlet.http.HttpServletRequest;
 public class ProductController {
     @Autowired
     private ProductService productService;
-
-    @Autowired
-    private StockService stockService;
-    @GetMapping
-    public ResponseEntity<Page<BasicStockInfo>> getProducts(@RequestParam(defaultValue = "0", value = "page") int page,
-                                                            @RequestParam(defaultValue = "10", value = "size") int size,
-                                                            @RequestParam(defaultValue = "lasted", value = "sorted") String sortBy,
-                                                            @RequestParam(value = "category", required = false) String category,
-                                                            Authentication authentication){
-        Pageable pageable = PageRequest.of(page, size, stockService.getSortedBy(sortBy));
-        return new ResponseEntity<>(stockService.getUserProducts(pageable, category, authentication), HttpStatus.OK);
-    }
-    @PostMapping
-    public ResponseEntity<?> insertProduct(@RequestBody ProductRequest productRequest, Authentication authentication){
-        stockService.insertStock(productRequest, authentication);
-        return new ResponseEntity<>(new SuccessMessage(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDetailInfo> getProductsDetail(@PathVariable Long id, Authentication authentication){
-        return new ResponseEntity<>(stockService.getProductDetail(id,authentication), HttpStatus.OK);
-    }
-
 }

@@ -8,14 +8,13 @@ import management.sttock.api.sevice.StockService;
 import management.sttock.db.entity.*;
 import management.sttock.db.entity.enums.CommonCodeType;
 import management.sttock.db.repository.*;
-import management.sttock.support.error.ApiException;
-import management.sttock.support.error.ErrorType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +32,19 @@ public class StockServiceImpl implements StockService {
     private CommonCodeRepository commonCodeRepository;
 
     @Override
+    @Transactional
     public void insertStock(ProductRequest productRequest, Authentication authentication){
-        User user = userRepository.findByLoginId(authentication.getName()).get();
+//        User user = userRepository.findByLoginId(authentication.getName()).get();
+        User user = userRepository.findById(productRequest.getUserId()).get();
         Product product = productRepository.findById(productRequest.getProdId()).get();
-        CommonCode stateCode = commonCodeRepository.findByCode(CommonCodeType.in_use.name());
-        stockMasterRepository.save(productRequest.toEntity(product, user, stateCode));
+        stockMasterRepository.save(productRequest.toEntity(product, user));
+        return;
     }
 
     @Override
-    public Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, Authentication authentication){
-        User user = userRepository.findByLoginId(authentication.getName()).get();
+    public Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, Authentication authentication, Long userId){
+//        User user = userRepository.findByLoginId(authentication.getName()).get();
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 userID"));
         Page<StockMaster> userStockList =  stockMasterRepository.findByUser(user, pageable);
         return userStockList.map(o -> new BasicStockInfo(o));
     }
