@@ -20,7 +20,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MailSendServiceImpl implements MailSendService {
     private final JavaMailSenderImpl javaMailSender;
-    private final VerificationCodeRepository verificationCodeRepository;
+//    private final VerificationCodeRepository verificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final String DIGITS = "0123456789";
@@ -33,32 +33,32 @@ public class MailSendServiceImpl implements MailSendService {
         int authNumber = makeTempNumber();
         buildMail(authNumber, email);
         VerificationCode verificationCode = new VerificationCode(email, authNumber,false);
-        verificationCodeRepository.save(verificationCode);
+//        verificationCodeRepository.save(verificationCode);
         return authNumber;
     }
 
-    @Override
-    public void checkAuthNumber(String email, int authNumber) {
-        VerificationCode verificationCode = verificationCodeRepository.findById(email).get();
-        int expectedAuthNumber = verificationCode.getAuthNumber();
-        boolean isNotMatchAuthCode = expectedAuthNumber != authNumber;
-        if (isNotMatchAuthCode) {
-            throw new ApiException(ErrorType.BAD_REQUEST_DATA);
-        }
-        verificationCode.setVerificationStatus(true);
-        verificationCodeRepository.save(verificationCode);
-    }
+//    @Override
+//    public void checkAuthNumber(String email, int authNumber) {
+//        VerificationCode verificationCode = verificationCodeRepository.findById(email).get();
+//        int expectedAuthNumber = verificationCode.getAuthNumber();
+//        boolean isNotMatchAuthCode = expectedAuthNumber != authNumber;
+//        if (isNotMatchAuthCode) {
+//            throw new ApiException(ErrorType.BAD_REQUEST_DATA);
+//        }
+//        verificationCode.setVerificationStatus(true);
+//        verificationCodeRepository.save(verificationCode);
+//    }
 
-    @Override
-    public void checkVerificationStatus(String email) {
-        boolean verificationStatus = verificationCodeRepository.findById(email)
-                .map(VerificationCode::isVerificationStatus)
-                .orElse(false);
-
-        if(!verificationStatus) {
-            throw new ApiException(ErrorType.UNAUTHENTICATED_STATUS);
-        }
-    }
+//    @Override
+//    public void checkVerificationStatus(String email) {
+//        boolean verificationStatus = verificationCodeRepository.findById(email)
+//                .map(VerificationCode::isVerificationStatus)
+//                .orElse(false);
+//
+//        if(!verificationStatus) {
+//            throw new ApiException(ErrorType.UNAUTHENTICATED_STATUS);
+//        }
+//    }
 
     @Override
     public String sendTempPassword(String email) {

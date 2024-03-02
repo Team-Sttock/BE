@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void checkAuthNumber(String email, int authNumber) {
         validateEmail(email);
-        mailSendService.checkAuthNumber(email, authNumber);
+//        mailSendService.checkAuthNumber(email, authNumber);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         validateloginId(request.getLoginId());
         validateEmail(request.getEmail());
 
-        mailSendService.checkVerificationStatus(request.getEmail());
+//        mailSendService.checkVerificationStatus(request.getEmail());
 
         try {
             User user = User.builder()

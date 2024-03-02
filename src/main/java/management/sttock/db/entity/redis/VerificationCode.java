@@ -2,10 +2,10 @@ package management.sttock.db.entity.redis;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
+//import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash(value = "VerificationCode", timeToLive = 600)
+//@RedisHash(value = "VerificationCode", timeToLive = 600)
 public class VerificationCode {
     @Id
     private String email;
