@@ -93,4 +93,5 @@ jobs:
             -e DB_USERNAME=$DB_USERNAME \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e ACTIVE_CONFIG=$ACTIVE_CONFIG \         
-            -p $CONTAINER_PORT:8080 --name $CONTAINER_NAME $CONTAINER_TAG
+            -p $CONTAINER_PORT:8080 \ 
+            --name $CONTAINER_NAME $CONTAINER_TAG
