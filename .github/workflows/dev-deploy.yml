@@ -93,5 +93,6 @@ jobs:
             -e DB_USERNAME=$DB_USERNAME \
             -e DB_PASSWORD=$DB_PASSWORD \
             -e ACTIVE_CONFIG=$ACTIVE_CONFIG \
+            -e REFRESH_VALIDATE_SECONDS=1209600 \
             -p $CONTAINER_PORT:$CONTAINER_PORT \
             --name $CONTAINER_NAME $CONTAINER_TAG 
