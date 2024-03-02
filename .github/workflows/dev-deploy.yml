@@ -95,6 +95,6 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e ACTIVE_CONFIG=$ACTIVE_CONFIG \
             -e REFRESH_VALIDATE_SECONDS=1209600 \
-            -e SWAGGER_URL=$SWAGGER_URL
+            -e SWAGGER_URL=$SWAGGER_URL \
             -p $CONTAINER_PORT:$CONTAINER_PORT \
             --name $CONTAINER_NAME $CONTAINER_TAG 
