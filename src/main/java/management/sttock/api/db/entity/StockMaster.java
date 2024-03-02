@@ -5,11 +5,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import management.sttock.api.db.entity.base.BaseEntity;
+import management.sttock.api.db.entity.enums.State;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -48,13 +51,14 @@ public class StockMaster extends BaseEntity {
     private Integer buyQty; // 구매 갯수
     private Integer headCount; // 사용인원
     private Integer basicUsage; // 입력 1일 사용량
-    private LocalDateTime cycleEndDt; // 주기 종료 날짜
     private String useYn;
+    @Enumerated(EnumType.STRING)
+    private State state;
     private LocalDateTime expirationDt; // 유통기한
     @OneToMany(mappedBy = "stockMaster", cascade = CascadeType.ALL)
     private List<StockDetail> stockDetailList = new ArrayList<>();
     @Builder
-    public StockMaster(User user, Product product, String nickname, Integer basicAmount, Integer basicUsage, Integer headCount, Integer buyQty, LocalDateTime cycleEndDt, String useYn, LocalDateTime buyDt, LocalDateTime expirationDt) {
+    public StockMaster(User user, Product product, String nickname, Integer basicAmount, Integer basicUsage, Integer headCount, Integer buyQty, String useYn, LocalDateTime buyDt, LocalDateTime expirationDt, State state) {
         this.user = user;
         this.product = product;
         this.nickname = nickname;
@@ -62,10 +66,10 @@ public class StockMaster extends BaseEntity {
         this.basicUsage = basicUsage;
         this.headCount = headCount;
         this.buyQty = buyQty;
-        this.cycleEndDt = cycleEndDt;
         this.useYn = useYn;
         this.buyDt = buyDt;
         this.expirationDt = expirationDt;
+        this.state = state;
     }
     public void addStockDetail(StockDetail stockDetail){
         this.stockDetailList.add(stockDetail);

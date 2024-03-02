@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 @Tag(name = "Stock", description = "개인 유저가 보유한 PRODUCT API")
 @RestController
 @RequestMapping(ApiPath.V1_STOCK)
@@ -29,19 +30,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockController {
 
     private final StockService stockService;
+
     @GetMapping
     public ResponseEntity<Page<BasicStockInfo>> getProducts(@RequestParam(defaultValue = "0", value = "page") int page,
                                                             @RequestParam(defaultValue = "10", value = "size") int size,
                                                             @RequestParam(defaultValue = "lasted", value = "sorted") String sortBy,
                                                             @RequestParam(value = "category", required = false) String category,
                                                             @RequestParam(required = false) Long userId, // Todo: 삭제예정
-                                                            Authentication authentication){
+                                                            Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size, stockService.getSortedBy(sortBy));
         return new ResponseEntity<>(stockService.getUserProducts(pageable, category, authentication, userId), HttpStatus.OK);
     }
+
     @Operation(summary = "상품 추가", description = "유저 상품 정보 추가")
     @PostMapping
-    public ResponseEntity<?> insertProduct(@RequestBody ProductRequest productRequest, Authentication authentication){
+    public ResponseEntity<?> insert(@RequestBody ProductRequest productRequest, Authentication authentication) {
         stockService.insertStock(productRequest, authentication);
         return new ResponseEntity<>(new SuccessMessage(), HttpStatus.OK);
     }

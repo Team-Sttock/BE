@@ -40,7 +40,7 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public void insertStock(ProductRequest productRequest, Authentication authentication){
-//        User user = userRepository.findByLoginId(authentication.getName()).get();
+//        User user = userRepository.findByLoginId(authentication.getName()).get(); // Todo
         User user = userRepository.findById(productRequest.getUserId()).get();
         Product product = productRepository.findById(productRequest.getProdId()).get();
         stockMasterRepository.save(productRequest.toEntity(product, user));
