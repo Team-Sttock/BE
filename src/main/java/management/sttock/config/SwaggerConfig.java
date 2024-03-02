@@ -17,6 +17,8 @@ import java.util.List;
 
 @Component
 public class SwaggerConfig {
+    @Value("${swagger.api}") String url;
+
     @Bean
     public OpenAPI openAPI(@Value("v1.0") String appVersion) {
 
@@ -25,11 +27,9 @@ public class SwaggerConfig {
                 .contact(new Contact().name("STTOCK").url("https://github.com/Team-Sttock").email("been0822@ajou.ac.kr"))
                 .license(new License().name("Apache License Version 2.0").url("http://www.apache.org/licenses/LICENSE-2.0"));
 
-        Server apiServer = new Server().description("Server API").url("https://api.sttock.co.kr");
-        Server localServer = new Server().description("Local API").url("http://localhost:8080");
+        Server apiServer = new Server().description("Server API").url(url);
 
         List<Server> servers = new ArrayList<>();
-        servers.add(localServer);
         servers.add(apiServer);
 
         /** 인증 토큰 **/

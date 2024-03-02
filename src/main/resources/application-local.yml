@@ -22,3 +22,6 @@ logging:
     org:
       springframework:
         security: DEBUG
+
+swagger:
+  api: http://localhost:8080

@@ -13,3 +13,5 @@ logging:
     org:
       springframework:
         security: INFO
+swagger:
+  api: ${SWAGGER_URL}
