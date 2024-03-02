@@ -37,6 +37,6 @@ public class Product extends BaseEntity {
 
     private Integer amount; // 제품양
 
-    private Integer usageCount; // 1일 사용양
+    private Float usageCount; // 1일 사용양
 
 }
