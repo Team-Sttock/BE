@@ -1,5 +1,6 @@
 package management.sttock.api.controller.basic;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import management.sttock.api.sevice.ProductService;
 import management.sttock.common.define.ApiPath;
@@ -20,6 +21,7 @@ public class BasicProductController {
     @Autowired
     private ProductService productService;
 
+    @Operation(description = "기본 product list 반환 api")
     @GetMapping
     public ResponseEntity<?> getBasicProducts(@RequestParam(value = "like", required = false) String like, HttpServletRequest request){
         return new ResponseEntity<>(productService.selectBasicProducts(like), HttpStatus.OK);

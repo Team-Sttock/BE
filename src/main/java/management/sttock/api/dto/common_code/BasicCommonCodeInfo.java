@@ -11,7 +11,6 @@ public class BasicCommonCodeInfo {
 
     public BasicCommonCodeInfo(CommonCode commonCode){
         categoryCd = commonCode.getCode();
-        categoryUrl = commonCode.getImageUrl();
         categoryName = commonCode.getNameKr();
     }
 }
