@@ -94,4 +94,5 @@ jobs:
             -e DB_PASSWORD=$DB_PASSWORD \
             -e ACTIVE_CONFIG=$ACTIVE_CONFIG \
             -p $CONTAINER_PORT:$CONTAINER_PORT \
-            --name $CONTAINER_NAME $CONTAINER_TAG
+            --name $CONTAINER_NAME $CONTAINER_TAG \
+            --network redis_network
