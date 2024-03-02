@@ -92,6 +92,6 @@ jobs:
             -e KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
             -e DB_USERNAME=$DB_USERNAME \
             -e DB_PASSWORD=$DB_PASSWORD \
-            -e ACTIVE_CONFIG=$ACTIVE_CONFIG \         
-            -p $CONTAINER_PORT:8080 \ 
+            -e ACTIVE_CONFIG=$ACTIVE_CONFIG \
+            -p $CONTAINER_PORT:$CONTAINER_PORT \
             --name $CONTAINER_NAME $CONTAINER_TAG
