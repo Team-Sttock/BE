@@ -1,0 +1,96 @@
+
+name: Build and Deploy
+
+env:
+  CONTAINER_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:v0.0.${{ github.run_number }}
+
+on:
+  push:
+    branches:
+      - 'pipeline/**'
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: 'gradle'
+
+    # gradle caching - 빌드 시간 향상
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Build with gradle
+      run: |
+        chmod +x ./gradlew
+        ./gradlew build -x test
+
+    - name: Docker Login
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t $CONTAINER_TAG .
+        docker push $CONTAINER_TAG
+
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      env:
+        CONTAINER_TAG: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_IMAGE }}:v0.0.${{ github.run_number }}
+        CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
+        CONTAINER_NAME: ${{ secrets.DOCKERHUB_IMAGE }}
+        DB_URL: ${{secrets.DB_URL}}
+        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        DB_USERNAME: ${{secrets.DB_USERNAME}}
+        KAKAO_CLIENT_ID: ${{secrets.KAKAO_CLIENT_ID}}
+        KAKAO_CLIENT_SECRET: ${{secrets.KAKAO_CLIENT_SECRET}}
+        MAIL_HOST: ${{secrets.MAIL_HOST}}
+        MAIL_PASSWORD: ${{secrets.MAIL_PASSWORD}}
+        MAIL_USERNAME: ${{secrets.MAIL_USERNAME}}
+        NAVER_CLIENT_ID: ${{secrets.NAVER_CLIENT_ID}}
+        NAVER_CLIENT_SECRET: ${{secrets.NAVER_CLIENT_SECRET}}
+        REFRESH_VALIDATE_SECONDS: ${{secrets.REFRESH_VALIDATE_SECONDS}}
+        S3_ACCESS_KEY: ${{secrets.S3_ACCESS_KEY}}
+        S3_SECRET_KEY: ${{secrets.S3_SECRET_KEY}}
+        SECRET_KEY: ${{secrets.SECRET_KEY}}
+        TOKEN_VALIDATE_SECONDS: ${{secrets.TOKEN_VALIDATE_SECONDS}}
+        ACTIVE_CONFIG: "dev"
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: CONTAINER_TAG,CONTAINER_PORT,CONTAINER_NAME,DB_PASSWORD,DB_URL,TOKEN_VALIDATE_SECONDS,S3_ACCESS_KEY,S3_SECRET_KEY,SECRET_KEY,NAVER_CLIENT_SECRET,NAVER_CLIENT_ID,MAIL_USERNAME,MAIL_PASSWORD,MAIL_HOST,KAKAO_CLIENT_SECRET,KAKAO_CLIENT_ID,DB_USERNAME,DB_PASSWORD,ACTIVE_CONFIG
+          script: |
+            docker stop $CONTAINER_NAME 
+            docker rm $CONTAINER_NAME
+            docker run -d \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e DB_URL=$DB_URL \
+            -e TOKEN_VALIDATE_SECONDS=$TOKEN_VALIDATE_SECONDS \
+            -e S3_ACCESS_KEY=$S3_ACCESS_KEY \
+            -e S3_SECRET_KEY=$S3_SECRET_KEY \
+            -e SECRET_KEY=$SECRET_KEY \
+            -e NAVER_CLIENT_SECRET=$NAVER_CLIENT_SECRET \
+            -e NAVER_CLIENT_ID=$NAVER_CLIENT_ID \
+            -e MAIL_USERNAME=$MAIL_USERNAME \
+            -e MAIL_PASSWORD=$MAIL_PASSWORD \
+            -e MAIL_HOST=$MAIL_HOST \
+            -e KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
+            -e KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
+            -e DB_USERNAME=$DB_USERNAME \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e ACTIVE_CONFIG=$ACTIVE_CONFIG            
+            -p $CONTAINER_PORT:8080 --name $CONTAINER_NAME $CONTAINER_TAG
