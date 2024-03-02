@@ -1,7 +1,7 @@
 package management.sttock.api.dto.product;
 
 import lombok.Data;
-import management.sttock.db.entity.Product;
+import management.sttock.api.db.entity.Product;
 
 @Data
 public class BasicProductInfo {

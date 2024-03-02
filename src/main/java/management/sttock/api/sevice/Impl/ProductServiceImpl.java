@@ -1,17 +1,12 @@
 package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
+import management.sttock.api.db.entity.Product;
+import management.sttock.api.db.repository.ProductRepository;
+import management.sttock.api.db.repository.UserRepository;
 import management.sttock.api.dto.product.BasicProductInfo;
-import management.sttock.api.dto.product.ProductRequest;
 import management.sttock.api.sevice.ProductService;
-import management.sttock.db.entity.Product;
-import management.sttock.db.entity.User;
-import management.sttock.db.repository.ProductRepository;
-import management.sttock.db.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

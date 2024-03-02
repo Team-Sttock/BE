@@ -5,9 +5,9 @@ import lombok.Getter;
 import management.sttock.common.oauth2.userinfo.KakaoOAuth2UserInfo;
 import management.sttock.common.oauth2.userinfo.NaverOAuth2UserInfo;
 import management.sttock.common.oauth2.userinfo.OAuth2UserInfo;
-import management.sttock.db.entity.Role;
-import management.sttock.db.entity.User;
-import management.sttock.db.entity.enums.SocialType;
+import management.sttock.api.db.entity.Role;
+import management.sttock.api.db.entity.User;
+import management.sttock.api.db.entity.enums.SocialType;
 
 
 import java.util.Map;

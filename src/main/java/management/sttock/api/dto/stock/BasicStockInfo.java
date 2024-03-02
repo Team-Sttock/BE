@@ -1,8 +1,8 @@
 package management.sttock.api.dto.stock;
 
 import lombok.Data;
-import management.sttock.db.entity.StockMaster;
-import management.sttock.db.entity.enums.State;
+import management.sttock.api.db.entity.StockMaster;
+import management.sttock.api.db.entity.enums.State;
 
 import java.time.LocalDateTime;
 

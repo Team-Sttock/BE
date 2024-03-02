@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import management.sttock.common.auth.local.CustomUserDetailsService;
 import management.sttock.common.auth.local.TokenProvider;
 import management.sttock.common.oauth2.CustomOAuth2User;
-import management.sttock.db.entity.Role;
+import management.sttock.api.db.entity.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

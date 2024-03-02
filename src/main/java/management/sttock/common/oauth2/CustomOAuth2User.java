@@ -1,7 +1,7 @@
 package management.sttock.common.oauth2;
 
 import lombok.Getter;
-import management.sttock.db.entity.Role;
+import management.sttock.api.db.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 

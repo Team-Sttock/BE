@@ -1,11 +1,11 @@
 package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
+import management.sttock.api.db.entity.CommonCode;
+import management.sttock.api.db.entity.enums.CommonCodeType;
+import management.sttock.api.db.repository.CommonCodeRepository;
 import management.sttock.api.dto.common_code.BasicCommonCodeInfo;
 import management.sttock.api.sevice.CommonCodeService;
-import management.sttock.db.entity.CommonCode;
-import management.sttock.db.entity.enums.CommonCodeType;
-import management.sttock.db.repository.CommonCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

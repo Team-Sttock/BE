@@ -1,10 +1,10 @@
 package management.sttock.api.sevice;
 
-import javax.servlet.http.HttpServletResponse;
-import management.sttock.api.dto.auth.LoginRequest;
 import management.sttock.api.dto.auth.CookieResponse;
+import management.sttock.api.dto.auth.LoginRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public interface AuthService {
     CookieResponse login(LoginRequest loginRequest);

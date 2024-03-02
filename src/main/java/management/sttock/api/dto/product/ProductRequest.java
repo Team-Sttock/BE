@@ -2,12 +2,11 @@ package management.sttock.api.dto.product;
 
 
 import lombok.Getter;
-
-import management.sttock.db.entity.Product;
-import management.sttock.db.entity.StockMaster;
-import management.sttock.db.entity.User;
-import management.sttock.db.entity.enums.ProductCategory;
-import management.sttock.db.entity.enums.UnitType;
+import management.sttock.api.db.entity.Product;
+import management.sttock.api.db.entity.StockMaster;
+import management.sttock.api.db.entity.User;
+import management.sttock.api.db.entity.enums.ProductCategory;
+import management.sttock.api.db.entity.enums.UnitType;
 
 import java.time.LocalDateTime;
 

@@ -1,8 +1,8 @@
 package management.sttock.common.auth.local;
 
 import lombok.RequiredArgsConstructor;
-import management.sttock.db.entity.User;
-import management.sttock.db.repository.UserRepository;
+import management.sttock.api.db.entity.User;
+import management.sttock.api.db.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

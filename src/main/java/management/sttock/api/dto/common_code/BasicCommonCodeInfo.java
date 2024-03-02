@@ -1,7 +1,7 @@
 package management.sttock.api.dto.common_code;
 
 import lombok.Data;
-import management.sttock.db.entity.CommonCode;
+import management.sttock.api.db.entity.CommonCode;
 
 @Data
 public class BasicCommonCodeInfo {

@@ -1,9 +1,8 @@
 package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
+import management.sttock.api.db.entity.redis.VerificationCode;
 import management.sttock.api.sevice.MailSendService;
-import management.sttock.db.entity.redis.VerificationCode;
-import management.sttock.db.repository.VerificationCodeRepository;
 import management.sttock.support.error.ApiException;
 import management.sttock.support.error.ErrorType;
 import org.springframework.mail.javamail.JavaMailSenderImpl;

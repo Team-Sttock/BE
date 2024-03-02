@@ -1,8 +1,5 @@
 package management.sttock.common.define;
 
-import management.sttock.api.sevice.ProductService;
-import management.sttock.db.entity.Product;
-
 public class ApiPath extends CorePath{
     /* defalut */
     private static final String V1 = "/api/v1";

@@ -1,13 +1,19 @@
 package management.sttock.api.sevice.Impl;
 
 import lombok.RequiredArgsConstructor;
+import management.sttock.api.db.entity.Product;
+import management.sttock.api.db.entity.StockDetail;
+import management.sttock.api.db.entity.StockMaster;
+import management.sttock.api.db.entity.User;
+import management.sttock.api.db.repository.CommonCodeRepository;
+import management.sttock.api.db.repository.CustomStockRepository;
+import management.sttock.api.db.repository.ProductRepository;
+import management.sttock.api.db.repository.StockMasterRepository;
+import management.sttock.api.db.repository.UserRepository;
 import management.sttock.api.dto.product.ProductDetailInfo;
 import management.sttock.api.dto.product.ProductRequest;
 import management.sttock.api.dto.stock.BasicStockInfo;
 import management.sttock.api.sevice.StockService;
-import management.sttock.db.entity.*;
-import management.sttock.db.entity.enums.CommonCodeType;
-import management.sttock.db.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

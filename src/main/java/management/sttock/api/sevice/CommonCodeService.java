@@ -1,8 +1,7 @@
 package management.sttock.api.sevice;
 
+import management.sttock.api.db.entity.enums.CommonCodeType;
 import management.sttock.api.dto.common_code.BasicCommonCodeInfo;
-import management.sttock.db.entity.CommonCode;
-import management.sttock.db.entity.enums.CommonCodeType;
 
 import java.util.List;
 
