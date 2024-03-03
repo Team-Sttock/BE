@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum State {
-    USING("USING", "사용중"),
-    EXHAUST("EXHAUST", "소진"),
-    STOP_USING("STOP_USING", "사용중지"),
+    INUSE("INUSE", "사용중"),
+    EXHAUSTED("EXHAUSTED", "소진"),
+    STOP("STOP", "사용중지"),
     DELETE("DELETE", "삭제"),
     ;
     private String code;

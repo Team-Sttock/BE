@@ -32,6 +32,6 @@ public class ProductInfo {
         this.categoryImageUrl = sm.getProduct().getProductCategoryCd().getCode(); // Todo: imageUrl로 변경예정
         this.purchaseDate = sm.getCrtDt();
         this.expectedDays = sm.getBasicAmount() / sm.getBasicUsage();
-        this.state = State.USING.getName(); // Todo: 수정 예정
+        this.state = sm.getState().getName(); // Todo: 수정 예정
     }
 }

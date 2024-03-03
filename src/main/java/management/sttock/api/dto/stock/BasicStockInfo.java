@@ -15,8 +15,7 @@ public class BasicStockInfo {
     private Long prodId;
     private String prodName;
     private String categoryCd;
-    private LocalDateTime purchaseDate; // 구매 날짜
-    private int expectedDays;
+    private int remainDays;
     private String state;
 
     public BasicStockInfo(StockMaster sm){
@@ -24,7 +23,7 @@ public class BasicStockInfo {
         this.prodId = sm.getProduct().getProductId();
         this.prodName = sm.getProduct().getName();
         this.categoryCd = sm.getProduct().getProductCategoryCd().getCode();
-        this.purchaseDate = sm.getCrtDt();
-        this.state = State.USING.getName();// Todo: 변경 예정
+        this.remainDays = sm.getBasicAmount(); // TODO: 남은 날짜 계산 로직 수정 예정
+        this.state = sm.getState().getName();
     }
 }

@@ -31,7 +31,7 @@ public class ProductRequest {
                                                 .basicUsage(expectedDays * purchaseCapacity / purchaseNumber )
                                                 .headCount(numberOfUser)
                                                 .buyQty(purchaseNumber)
-                                                .state(State.USING)
+                                                .state(State.INUSE)
                                                 .useYn("Y")
                                                 .expirationDt(expirationDate)
                                                 .buyDt(buyDt)

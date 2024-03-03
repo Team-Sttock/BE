@@ -65,7 +65,7 @@ public class StockController {
     }
 
     @Operation(summary = "basic 상품 사용중지 API ", description = "상품 사용 중지 API")
-    @DeleteMapping("/stopUsing/{id}")
+    @DeleteMapping("/stop/{id}")
     public ResponseEntity<?> stopUsing(@PathVariable("id") Long smId,  Authentication authentication) {
         stockService.stopUsing(smId, authentication);
         return new ResponseEntity<>(new SuccessMessage(), HttpStatus.OK);

@@ -83,7 +83,7 @@ public class StockServiceImpl implements StockService {
     @Transactional
     public void stopUsing(Long smId, Authentication authentication) {
         StockMaster stockMaster = stockMasterRepository.findById(smId).get();
-        stockMaster.changeState(State.STOP_USING);
+        stockMaster.changeState(State.STOP);
         stockMasterRepository.save(stockMaster);
         return;
     }
