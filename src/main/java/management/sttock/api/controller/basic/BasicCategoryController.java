@@ -2,14 +2,9 @@ package management.sttock.api.controller.basic;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import management.sttock.api.db.entity.enums.CommonCodeType;
-import management.sttock.api.db.entity.enums.ProductCategory;
-import management.sttock.api.dto.common_code.BasicCommonCodeInfo;
 import management.sttock.api.dto.common_code.EnumTypeRes;
-import management.sttock.api.sevice.CommonCodeService;
 import management.sttock.api.sevice.EnumTypeService;
 import management.sttock.common.define.ApiPath;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StockMasterRepository extends JpaRepository<StockMaster, Long> {
-    Page<StockMaster> findByUser(User user, Pageable pageable);
+    List<StockMaster> findByUser(User user);
 }

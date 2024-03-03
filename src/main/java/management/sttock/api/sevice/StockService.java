@@ -7,14 +7,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 
 public interface StockService {
+
+    @Transactional
     void insertStock(ProductRequest productRequest, Authentication authentication);
 
-    Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, Authentication authentication, Long userId);
+    @Transactional
+    Long update(ProductRequest productRequest, Long smId, Authentication authentication);
+
+    ProductDetailInfo getProductDetail(Long id, Authentication authentication, Long userId);
+
+    Page<BasicStockInfo> getUserProducts(Pageable pageable, String category, LocalDateTime startDt, LocalDateTime endDt, Authentication authentication, Long userId);
 
     Sort getSortedBy(String sortBy);
 
-    ProductDetailInfo getProductDetail(Long id, Authentication authentication);
+    void stopUsing(Long smId, Authentication authentication);
 }

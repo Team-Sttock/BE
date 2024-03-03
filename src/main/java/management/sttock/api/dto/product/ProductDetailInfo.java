@@ -18,7 +18,6 @@ public class ProductDetailInfo {
     private int purchaseNumber;
     private int numberOfUser;
     private LocalDateTime expirationDate;
-    private String categoryUrl;
     private String state;
 
     /**
@@ -31,17 +30,15 @@ public class ProductDetailInfo {
     public ProductDetailInfo(StockMaster sm, int expectedDays){
         this.prodId = sm.getProduct().getProductId();
         this.prodNickname = sm.getNickname();
-        this.categoryCd = sm.getProduct().getProductCategoryCd().getCode();
+        this.categoryCd = sm.getProduct().getProductCategoryCd().getName();
         this.purchaseDate = sm.getBuyDt();
         this.expectedDays = expectedDays;
         this.purchaseCapacity = sm.getBasicAmount();
-        this.capacityUnitCd = sm.getProduct().getUnitCd().getCode();
+        this.capacityUnitCd = sm.getProduct().getUnitCd().getName();
         this.purchaseNumber = sm.getBuyQty();
         this.numberOfUser = sm.getHeadCount();
         this.expirationDate = sm.getExpirationDt();
-        this.categoryUrl = sm.getProduct().getProductCategoryCd().getCode(); //Todo: imageUrl 로 변경
-        this.state = State.USING.getName(); //Todo: 수정예정
+        this.state = sm.getState().getName(); //Todo: 수정예정
     }
-
 
 }

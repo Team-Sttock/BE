@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import management.sttock.api.db.entity.base.BaseEntity;
 import management.sttock.api.db.entity.enums.State;
+import management.sttock.api.dto.product.ProductRequest;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -74,5 +75,19 @@ public class StockMaster extends BaseEntity {
     public void addStockDetail(StockDetail stockDetail){
         this.stockDetailList.add(stockDetail);
         stockDetail.setStockMaster(this);
+    }
+
+    public void update(ProductRequest pr){
+        this.nickname = pr.getNickname();
+        this.basicAmount = pr.getPurchaseCapacity();
+        this.basicUsage = pr.getExpectedDays() * pr.getPurchaseCapacity()/ pr.getPurchaseNumber();
+        this.headCount = pr.getNumberOfUser();
+        this.buyQty = pr.getPurchaseNumber();
+        this.expirationDt = pr.getExpirationDate();
+        this.buyDt = pr.getBuyDt();
+    }
+
+    public void changeState(State state){
+        this.state = state;
     }
 }
